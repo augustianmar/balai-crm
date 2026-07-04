@@ -1,0 +1,450 @@
+const contacts = [
+  {
+    id: "bessie",
+    firstName: "Bessie",
+    lastName: "Warren",
+    company: "Aurora Anchor Fitness",
+    email: "bessie@anchorfitness.com",
+    phone: "+358 40 882 0771",
+    status: "Client",
+    market: "Indonesia",
+    value: "EUR 18,500",
+    avatar: "BW",
+    color: "#f1a7b8",
+    tasks: [
+      "Call Bessie and discuss business plan for new winter gym retreat",
+      "Send revised SEA buyer profile",
+      "Confirm February group capacity"
+    ],
+    messages: [
+      "Hey Augustian, I am opening a new package and would like to run the market angle by you.",
+      "Could BALAI help us follow up with the Jakarta leads next week?"
+    ],
+    notes: [
+      "Interested in Indonesia and Malaysia outbound groups.",
+      "Prefers WhatsApp follow-up after email."
+    ]
+  },
+  {
+    id: "rob",
+    firstName: "Rob",
+    lastName: "Wilson",
+    company: "Snow Trail Lodge",
+    email: "rwilson@snowtrail.fi",
+    phone: "+358 45 120 3398",
+    status: "Lead",
+    market: "Malaysia",
+    value: "EUR 7,900",
+    avatar: "RW",
+    color: "#b5d7a8",
+    tasks: ["Prepare Muslim-friendly service checklist", "Book intro call"],
+    messages: ["Can you send examples of how other Lapland operators position family trips?"],
+    notes: ["Strong fit for family packages and private transfers."]
+  },
+  {
+    id: "kevin",
+    firstName: "Kevin",
+    lastName: "Zihao",
+    company: "Nordic Connect Hub",
+    email: "kz@nordichub.com",
+    phone: "+358 50 442 1810",
+    status: "Lead",
+    market: "Singapore",
+    value: "EUR 11,200",
+    avatar: "KZ",
+    color: "#afd0f1",
+    tasks: ["Map Singapore agency partners", "Draft intro deck"],
+    messages: ["We have three agencies asking for Finnish winter products with clear commission terms."],
+    notes: ["Good gateway contact for wider SEA travel trade."]
+  },
+  {
+    id: "nick",
+    firstName: "Nick",
+    lastName: "Garza",
+    company: "Lapland Basecamp",
+    email: "ng@basecamp.fi",
+    phone: "+358 44 771 6544",
+    status: "Client",
+    market: "Taiwan",
+    value: "EUR 24,000",
+    avatar: "NG",
+    color: "#ccbdf0",
+    tasks: ["Review Taiwan sales pipeline", "Update partner status"],
+    messages: ["The last trade fair report was useful. Can we turn that into a quarterly routine?"],
+    notes: ["Ready for recurring representation package."]
+  },
+  {
+    id: "craig",
+    firstName: "Craig",
+    lastName: "Stevens",
+    company: "Northern Table",
+    email: "cstevens@northerntable.com",
+    phone: "+358 40 339 8862",
+    status: "Lead",
+    market: "Indonesia",
+    value: "EUR 5,600",
+    avatar: "CS",
+    color: "#b8a5d9",
+    tasks: ["Localize private dining offer", "Add halal notes to proposal"],
+    messages: ["We need help explaining our food experience without losing the premium feel."],
+    notes: ["Culinary offer could be packaged for small high-value groups."]
+  },
+  {
+    id: "cynthia",
+    firstName: "Cynthia",
+    lastName: "Luan",
+    company: "Arctic View Suites",
+    email: "cluan@arcticview.com",
+    phone: "+358 46 812 9033",
+    status: "Client",
+    market: "Singapore",
+    value: "EUR 31,700",
+    avatar: "CL",
+    color: "#f1c9a7",
+    tasks: ["Send Q1 lead summary", "Check room block availability"],
+    messages: ["Can we see the warm leads by market before Monday?"],
+    notes: ["Most active account. Needs tight CRM follow-up."]
+  },
+  {
+    id: "penny",
+    firstName: "Penny",
+    lastName: "Stuart",
+    company: "Polar Pathways",
+    email: "pstuart@polars.fi",
+    phone: "+358 41 553 7712",
+    status: "Lead",
+    market: "Malaysia",
+    value: "EUR 9,300",
+    avatar: "PS",
+    color: "#d9e8b8",
+    tasks: ["Qualify budget", "Invite to BALAI market briefing"],
+    messages: ["We are curious, but we need to understand the real opportunity first."],
+    notes: ["Best entry product: market opportunity assessment."]
+  },
+  {
+    id: "ruben",
+    firstName: "Ruben",
+    lastName: "Maxwell",
+    company: "Aurora Crew",
+    email: "rmaxwell@auroracrew.com",
+    phone: "+358 44 120 7710",
+    status: "Lead",
+    market: "Indonesia",
+    value: "EUR 13,400",
+    avatar: "RM",
+    color: "#e6b2a9",
+    tasks: ["Share agency shortlist", "Create follow-up cadence"],
+    messages: ["We met several Indonesian guests but never managed to turn it into B2B sales."],
+    notes: ["Pain point is missed follow-up and no local-language pipeline."]
+  }
+];
+
+const navItems = [
+  ["Search", "search"],
+  ["Home", "home"],
+  ["Contacts", "contacts"],
+  ["My day", "day"],
+  ["Comms", "comms"],
+  ["Sales", "sales"],
+  ["Marketing", "marketing"],
+  ["Automation", "automation"],
+  ["Reports", "reports"]
+];
+
+const state = {
+  selectedId: "bessie",
+  query: "",
+  status: "All"
+};
+
+const app = document.querySelector("#app");
+
+function selectedContact() {
+  return contacts.find((contact) => contact.id === state.selectedId) || contacts[0];
+}
+
+function filteredContacts() {
+  const normalizedQuery = state.query.trim().toLowerCase();
+  return contacts.filter((contact) => {
+    const matchesStatus = state.status === "All" || contact.status === state.status;
+    const haystack = [
+      contact.firstName,
+      contact.lastName,
+      contact.company,
+      contact.email,
+      contact.market,
+      contact.status
+    ]
+      .join(" ")
+      .toLowerCase();
+    return matchesStatus && haystack.includes(normalizedQuery);
+  });
+}
+
+function initialsIcon(name) {
+  const letters = name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2);
+  return `<span aria-hidden="true">${letters}</span>`;
+}
+
+function render() {
+  const contact = selectedContact();
+  const visibleContacts = filteredContacts();
+
+  app.innerHTML = `
+    <main class="crm-shell" aria-label="BALAI Customer Relationship Management">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="brand-mark" title="BALAI Customer Relationship Management">B</div>
+        <button class="quick-add" aria-label="Add new contact">+</button>
+        <nav class="nav-list">
+          ${navItems
+            .map(
+              ([label, key]) => `
+                <button class="nav-item ${key === "contacts" ? "active" : ""}" type="button">
+                  ${navIcon(key)}
+                  <span>${label}</span>
+                </button>
+              `
+            )
+            .join("")}
+        </nav>
+        <button class="help-button" type="button" aria-label="Help">?</button>
+        <div class="user-avatar">AM</div>
+      </aside>
+
+      <section class="people-panel" aria-label="People">
+        <header class="panel-header">
+          <div>
+            <p class="eyebrow">BALAI</p>
+            <h1>People</h1>
+          </div>
+          <div class="header-actions" aria-label="People tools">
+            <button title="Sort contacts" type="button">${navIcon("sort")}</button>
+            <button title="Filter contacts" type="button">${navIcon("filter")}</button>
+            <button title="Add contact" type="button">${navIcon("plus")}</button>
+          </div>
+        </header>
+        <label class="search-box">
+          ${navIcon("search")}
+          <input id="searchInput" type="search" placeholder="Search contacts" value="${escapeHtml(state.query)}" />
+        </label>
+        <button class="select-all" type="button">
+          <span></span>
+          <strong>Select all</strong>
+        </button>
+        <div class="contact-list">
+          ${
+            visibleContacts.length
+              ? visibleContacts.map(renderContactRow).join("")
+              : `<p class="empty-state">No contacts match this view.</p>`
+          }
+        </div>
+      </section>
+
+      <section class="contact-stage" aria-label="Selected contact">
+        <header class="stage-toolbar">
+          <div class="segmented" role="tablist" aria-label="Contact stage">
+            ${["Lead", "Client", "Other"]
+              .map(
+                (status) => `
+                  <button class="${state.status === status ? "active" : ""}" type="button" data-status="${status}">
+                    ${status}
+                    <span class="${status.toLowerCase()}-dot"></span>
+                  </button>
+                `
+              )
+              .join("")}
+          </div>
+          <button class="close-button" type="button" data-status="All" title="Clear filter">x</button>
+        </header>
+
+        <section class="hero-contact">
+          <div class="profile-photo" style="--avatar-color: ${contact.color}">
+            ${contact.avatar}
+          </div>
+          <h2>${contact.firstName} ${contact.lastName}</h2>
+          <p>${contact.email}</p>
+          <div class="action-row">
+            ${["Call", "Text", "Email", "Tag", "Note", "More"]
+              .map(
+                (action) => `
+                  <button class="action-button" type="button">
+                    <span>${actionIcon(action)}</span>
+                    ${action}
+                  </button>
+                `
+              )
+              .join("")}
+          </div>
+        </section>
+
+        <section class="activity">
+          <div class="activity-header">
+            <h3>Contact activity</h3>
+            <div>
+              <button type="button" class="mini-button active" title="Cards view">${navIcon("card")}</button>
+              <button type="button" class="mini-button" title="Timeline view">${navIcon("clock")}</button>
+            </div>
+          </div>
+          <article class="activity-card">
+            <div>
+              <h4>Tasks</h4>
+              <p>${contact.tasks[0]}</p>
+              <button type="button">+${Math.max(contact.tasks.length - 1, 0)} more tasks</button>
+            </div>
+            <span class="card-icon">${navIcon("task")}</span>
+          </article>
+          <article class="activity-card">
+            <div>
+              <h4>Messages</h4>
+              <p>${contact.messages[0]}</p>
+            </div>
+            <span class="card-icon">${navIcon("message")}</span>
+          </article>
+          <article class="activity-card compact-card">
+            <h4>Pipeline value</h4>
+            <strong>${contact.value}</strong>
+            <p>${contact.market} market focus</p>
+          </article>
+        </section>
+      </section>
+
+      <aside class="info-panel" aria-label="Contact info">
+        <header class="info-header">
+          <span>${navIcon("info")}</span>
+          <div>
+            <h2>Contact info</h2>
+            <p>${contact.firstName} ${contact.lastName}</p>
+          </div>
+        </header>
+        ${infoSection("General", [
+          ["First Name", contact.firstName],
+          ["Last Name", contact.lastName],
+          ["Company", contact.company],
+          ["Market", contact.market],
+          ["Status", contact.status]
+        ])}
+        ${infoSection("Phone, email, and fax", [
+          ["Other phone", contact.phone],
+          ["Work email", contact.email],
+          ["Estimated value", contact.value]
+        ])}
+        ${infoSection("BALAI notes", contact.notes.map((note, index) => [`Note ${index + 1}`, note]))}
+      </aside>
+    </main>
+  `;
+
+  bindEvents();
+}
+
+function renderContactRow(contact) {
+  return `
+    <button class="contact-row ${state.selectedId === contact.id ? "selected" : ""}" type="button" data-contact-id="${contact.id}">
+      <span class="mini-avatar" style="--avatar-color: ${contact.color}">${contact.avatar}</span>
+      <span class="contact-copy">
+        <strong>${contact.firstName} ${contact.lastName}</strong>
+        <small>${contact.email}</small>
+      </span>
+      <span class="status-pill ${contact.status.toLowerCase()}">${contact.status}</span>
+    </button>
+  `;
+}
+
+function infoSection(title, rows) {
+  return `
+    <section class="info-section">
+      <h3>${title}</h3>
+      ${rows
+        .map(
+          ([label, value]) => `
+            <dl>
+              <dt>${label}</dt>
+              <dd>${value}</dd>
+            </dl>
+          `
+        )
+        .join("")}
+    </section>
+  `;
+}
+
+function bindEvents() {
+  document.querySelectorAll("[data-contact-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.selectedId = button.dataset.contactId;
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-status]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.status = button.dataset.status;
+      const firstVisible = filteredContacts()[0];
+      if (firstVisible) {
+        state.selectedId = firstVisible.id;
+      }
+      render();
+    });
+  });
+
+  document.querySelector("#searchInput").addEventListener("input", (event) => {
+    state.query = event.target.value;
+    const firstVisible = filteredContacts()[0];
+    if (firstVisible) {
+      state.selectedId = firstVisible.id;
+    }
+    render();
+  });
+}
+
+function navIcon(key) {
+  const icons = {
+    search: `<svg viewBox="0 0 24 24"><path d="m21 21-4.2-4.2m2-5.3a7.3 7.3 0 1 1-14.6 0 7.3 7.3 0 0 1 14.6 0Z"/></svg>`,
+    home: `<svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>`,
+    contacts: `<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.8"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg>`,
+    day: `<svg viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18"/><rect x="3" y="5" width="18" height="16" rx="2"/></svg>`,
+    comms: `<svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/></svg>`,
+    sales: `<svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7H15a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+    marketing: `<svg viewBox="0 0 24 24"><path d="M3 11v3a2 2 0 0 0 2 2h3l8 4V5L8 9H5a2 2 0 0 0-2 2Z"/><path d="M19 9a4 4 0 0 1 0 7"/></svg>`,
+    automation: `<svg viewBox="0 0 24 24"><path d="m13 2-8 12h7l-1 8 8-12h-7Z"/></svg>`,
+    reports: `<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>`,
+    sort: `<svg viewBox="0 0 24 24"><path d="m7 3-4 4 4 4"/><path d="M3 7h18"/><path d="m17 21 4-4-4-4"/><path d="M21 17H3"/></svg>`,
+    filter: `<svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>`,
+    plus: `<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>`,
+    card: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h5"/></svg>`,
+    clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>`,
+    task: `<svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-5"/><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/></svg>`,
+    message: `<svg viewBox="0 0 24 24"><path d="M21 14a4 4 0 0 1-4 4H9l-6 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h5"/></svg>`,
+    info: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`
+  };
+  return icons[key] || initialsIcon(key);
+}
+
+function actionIcon(action) {
+  const icons = {
+    Call: `<svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>`,
+    Text: `<svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/></svg>`,
+    Email: `<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>`,
+    Tag: `<svg viewBox="0 0 24 24"><path d="M20 13 11 22 2 13V4h9l9 9Z"/><path d="M7.5 8.5h.01"/></svg>`,
+    Note: `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>`,
+    More: `<svg viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>`
+  };
+  return icons[action];
+}
+
+function escapeHtml(value) {
+  return value.replace(/[&<>"']/g, (character) => {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[character];
+  });
+}
+
+render();
