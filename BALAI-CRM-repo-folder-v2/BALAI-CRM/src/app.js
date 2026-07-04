@@ -8,7 +8,12 @@ const contacts = [
     phone: "+358 40 882 0771",
     status: "Client",
     market: "Indonesia",
-    value: "EUR 18,500",
+    value: 18500,
+    priority: "High",
+    source: "Warm referral",
+    service: "SEA Market Representation",
+    lastTouch: "Today",
+    nextStep: "Confirm February group capacity",
     avatar: "BW",
     color: "#f1a7b8",
     tasks: [
@@ -34,7 +39,12 @@ const contacts = [
     phone: "+358 45 120 3398",
     status: "Lead",
     market: "Malaysia",
-    value: "EUR 7,900",
+    value: 7900,
+    priority: "Medium",
+    source: "Inbound enquiry",
+    service: "Cultural Localization",
+    lastTouch: "Yesterday",
+    nextStep: "Prepare Muslim-friendly service checklist",
     avatar: "RW",
     color: "#b5d7a8",
     tasks: ["Prepare Muslim-friendly service checklist", "Book intro call"],
@@ -50,7 +60,12 @@ const contacts = [
     phone: "+358 50 442 1810",
     status: "Lead",
     market: "Singapore",
-    value: "EUR 11,200",
+    value: 11200,
+    priority: "High",
+    source: "Agency partner",
+    service: "Partner Development",
+    lastTouch: "2 days ago",
+    nextStep: "Draft intro deck for agency calls",
     avatar: "KZ",
     color: "#afd0f1",
     tasks: ["Map Singapore agency partners", "Draft intro deck"],
@@ -66,7 +81,12 @@ const contacts = [
     phone: "+358 44 771 6544",
     status: "Client",
     market: "Taiwan",
-    value: "EUR 24,000",
+    value: 24000,
+    priority: "High",
+    source: "Trade fair",
+    service: "Trade Fair Representation",
+    lastTouch: "This week",
+    nextStep: "Update Taiwan sales pipeline",
     avatar: "NG",
     color: "#ccbdf0",
     tasks: ["Review Taiwan sales pipeline", "Update partner status"],
@@ -82,7 +102,12 @@ const contacts = [
     phone: "+358 40 339 8862",
     status: "Lead",
     market: "Indonesia",
-    value: "EUR 5,600",
+    value: 5600,
+    priority: "Medium",
+    source: "Local network",
+    service: "Product Positioning",
+    lastTouch: "4 days ago",
+    nextStep: "Add halal notes to proposal",
     avatar: "CS",
     color: "#b8a5d9",
     tasks: ["Localize private dining offer", "Add halal notes to proposal"],
@@ -98,7 +123,12 @@ const contacts = [
     phone: "+358 46 812 9033",
     status: "Client",
     market: "Singapore",
-    value: "EUR 31,700",
+    value: 31700,
+    priority: "High",
+    source: "Existing account",
+    service: "CRM Follow-up",
+    lastTouch: "Today",
+    nextStep: "Send Q1 lead summary",
     avatar: "CL",
     color: "#f1c9a7",
     tasks: ["Send Q1 lead summary", "Check room block availability"],
@@ -114,7 +144,12 @@ const contacts = [
     phone: "+358 41 553 7712",
     status: "Lead",
     market: "Malaysia",
-    value: "EUR 9,300",
+    value: 9300,
+    priority: "Low",
+    source: "Market briefing",
+    service: "Market Opportunity Assessment",
+    lastTouch: "Last week",
+    nextStep: "Qualify budget and timing",
     avatar: "PS",
     color: "#d9e8b8",
     tasks: ["Qualify budget", "Invite to BALAI market briefing"],
@@ -130,7 +165,12 @@ const contacts = [
     phone: "+358 44 120 7710",
     status: "Lead",
     market: "Indonesia",
-    value: "EUR 13,400",
+    value: 13400,
+    priority: "Medium",
+    source: "Guest observation",
+    service: "Lead Follow-up System",
+    lastTouch: "3 days ago",
+    nextStep: "Share agency shortlist",
     avatar: "RM",
     color: "#e6b2a9",
     tasks: ["Share agency shortlist", "Create follow-up cadence"],
@@ -154,7 +194,8 @@ const navItems = [
 const state = {
   selectedId: "bessie",
   query: "",
-  status: "All"
+  status: "All",
+  market: "All"
 };
 
 const app = document.querySelector("#app");
@@ -167,18 +208,35 @@ function filteredContacts() {
   const normalizedQuery = state.query.trim().toLowerCase();
   return contacts.filter((contact) => {
     const matchesStatus = state.status === "All" || contact.status === state.status;
+    const matchesMarket = state.market === "All" || contact.market === state.market;
     const haystack = [
       contact.firstName,
       contact.lastName,
       contact.company,
       contact.email,
       contact.market,
-      contact.status
+      contact.status,
+      contact.priority,
+      contact.service,
+      contact.source
     ]
       .join(" ")
       .toLowerCase();
-    return matchesStatus && haystack.includes(normalizedQuery);
+    return matchesStatus && matchesMarket && haystack.includes(normalizedQuery);
   });
+}
+
+function marketList() {
+  return ["All", ...new Set(contacts.map((contact) => contact.market))];
+}
+
+function summary() {
+  const visible = filteredContacts();
+  const pipeline = visible.reduce((total, contact) => total + contact.value, 0);
+  const leads = visible.filter((contact) => contact.status === "Lead").length;
+  const clients = visible.filter((contact) => contact.status === "Client").length;
+  const highPriority = visible.filter((contact) => contact.priority === "High").length;
+  return { visible, pipeline, leads, clients, highPriority };
 }
 
 function initialsIcon(name) {
@@ -193,6 +251,7 @@ function initialsIcon(name) {
 function render() {
   const contact = selectedContact();
   const visibleContacts = filteredContacts();
+  const metrics = summary();
 
   app.innerHTML = `
     <main class="crm-shell" aria-label="BALAI Customer Relationship Management">
@@ -218,7 +277,7 @@ function render() {
       <section class="people-panel" aria-label="People">
         <header class="panel-header">
           <div>
-            <p class="eyebrow">BALAI</p>
+            <p class="eyebrow">BALAI CRM</p>
             <h1>People</h1>
           </div>
           <div class="header-actions" aria-label="People tools">
@@ -229,11 +288,27 @@ function render() {
         </header>
         <label class="search-box">
           ${navIcon("search")}
-          <input id="searchInput" type="search" placeholder="Search contacts" value="${escapeHtml(state.query)}" />
+          <input id="searchInput" type="search" placeholder="Search contacts, markets, services" value="${escapeHtml(state.query)}" />
         </label>
+        <div class="market-filter" aria-label="Market filter">
+          ${marketList()
+            .map(
+              (market) => `
+                <button class="${state.market === market ? "active" : ""}" type="button" data-market="${market}">
+                  ${market}
+                </button>
+              `
+            )
+            .join("")}
+        </div>
+        <div class="quick-stats" aria-label="CRM summary">
+          ${metricCard("Pipeline", formatMoney(metrics.pipeline))}
+          ${metricCard("Leads", metrics.leads)}
+          ${metricCard("Clients", metrics.clients)}
+        </div>
         <button class="select-all" type="button">
           <span></span>
-          <strong>Select all</strong>
+          <strong>${metrics.highPriority} high-priority accounts</strong>
         </button>
         <div class="contact-list">
           ${
@@ -247,7 +322,7 @@ function render() {
       <section class="contact-stage" aria-label="Selected contact">
         <header class="stage-toolbar">
           <div class="segmented" role="tablist" aria-label="Contact stage">
-            ${["Lead", "Client", "Other"]
+            ${["All", "Lead", "Client"]
               .map(
                 (status) => `
                   <button class="${state.status === status ? "active" : ""}" type="button" data-status="${status}">
@@ -258,15 +333,21 @@ function render() {
               )
               .join("")}
           </div>
-          <button class="close-button" type="button" data-status="All" title="Clear filter">x</button>
+          <button class="close-button" type="button" data-status="All" data-market="All" title="Clear filters">x</button>
         </header>
 
         <section class="hero-contact">
           <div class="profile-photo" style="--avatar-color: ${contact.color}">
             ${contact.avatar}
           </div>
+          <p class="account-label">${contact.market} / ${contact.service}</p>
           <h2>${contact.firstName} ${contact.lastName}</h2>
           <p>${contact.email}</p>
+          <div class="deal-strip">
+            <span>${formatMoney(contact.value)}</span>
+            <span>${contact.priority} priority</span>
+            <span>${contact.lastTouch}</span>
+          </div>
           <div class="action-row">
             ${["Call", "Text", "Email", "Tag", "Note", "More"]
               .map(
@@ -289,6 +370,14 @@ function render() {
               <button type="button" class="mini-button" title="Timeline view">${navIcon("clock")}</button>
             </div>
           </div>
+          <article class="activity-card next-step-card">
+            <div>
+              <h4>Next best action</h4>
+              <p>${contact.nextStep}</p>
+              <button type="button">Mark as planned</button>
+            </div>
+            <span class="card-icon">${navIcon("task")}</span>
+          </article>
           <article class="activity-card">
             <div>
               <h4>Tasks</h4>
@@ -306,8 +395,8 @@ function render() {
           </article>
           <article class="activity-card compact-card">
             <h4>Pipeline value</h4>
-            <strong>${contact.value}</strong>
-            <p>${contact.market} market focus</p>
+            <strong>${formatMoney(contact.value)}</strong>
+            <p>${contact.market} market focus / ${contact.source}</p>
           </article>
         </section>
       </section>
@@ -327,10 +416,17 @@ function render() {
           ["Market", contact.market],
           ["Status", contact.status]
         ])}
+        ${infoSection("Commercial", [
+          ["Service fit", contact.service],
+          ["Pipeline value", formatMoney(contact.value)],
+          ["Priority", contact.priority],
+          ["Lead source", contact.source],
+          ["Next step", contact.nextStep]
+        ])}
         ${infoSection("Phone, email, and fax", [
           ["Other phone", contact.phone],
           ["Work email", contact.email],
-          ["Estimated value", contact.value]
+          ["Last touch", contact.lastTouch]
         ])}
         ${infoSection("BALAI notes", contact.notes.map((note, index) => [`Note ${index + 1}`, note]))}
       </aside>
@@ -346,10 +442,23 @@ function renderContactRow(contact) {
       <span class="mini-avatar" style="--avatar-color: ${contact.color}">${contact.avatar}</span>
       <span class="contact-copy">
         <strong>${contact.firstName} ${contact.lastName}</strong>
-        <small>${contact.email}</small>
+        <small>${contact.company}</small>
+        <small>${contact.market} / ${formatMoney(contact.value)}</small>
       </span>
-      <span class="status-pill ${contact.status.toLowerCase()}">${contact.status}</span>
+      <span class="row-meta">
+        <span class="status-pill ${contact.status.toLowerCase()}">${contact.status}</span>
+        <span class="priority-pill ${contact.priority.toLowerCase()}">${contact.priority}</span>
+      </span>
     </button>
+  `;
+}
+
+function metricCard(label, value) {
+  return `
+    <div class="metric-card">
+      <span>${label}</span>
+      <strong>${value}</strong>
+    </div>
   `;
 }
 
@@ -382,6 +491,17 @@ function bindEvents() {
   document.querySelectorAll("[data-status]").forEach((button) => {
     button.addEventListener("click", () => {
       state.status = button.dataset.status;
+      const firstVisible = filteredContacts()[0];
+      if (firstVisible) {
+        state.selectedId = firstVisible.id;
+      }
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-market]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.market = button.dataset.market;
       const firstVisible = filteredContacts()[0];
       if (firstVisible) {
         state.selectedId = firstVisible.id;
@@ -433,6 +553,10 @@ function actionIcon(action) {
     More: `<svg viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>`
   };
   return icons[action];
+}
+
+function formatMoney(value) {
+  return `EUR ${value.toLocaleString("en-US")}`;
 }
 
 function escapeHtml(value) {

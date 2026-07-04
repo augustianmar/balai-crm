@@ -4,7 +4,7 @@ A first static prototype for the BALAI CRM interface. It is designed to resemble
 
 ## Open
 
-Open `index.html` in a browser.
+Open `balai-crm-standalone.html` in a browser.
 
 To open it from a launcher page, open `open-crm.html` and click **Open CRM in new tab**.
 

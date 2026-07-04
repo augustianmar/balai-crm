@@ -233,6 +233,66 @@ h1 {
   background: transparent;
 }
 
+.market-filter {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 3px 22px 10px;
+}
+
+.market-filter button {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 11px;
+  color: #5c6670;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.market-filter button.active,
+.market-filter button:hover {
+  border-color: #d2d9df;
+  color: #182028;
+  background: #eef3f6;
+}
+
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 0 22px 10px;
+}
+
+.metric-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 9px;
+  background: #fff;
+}
+
+.metric-card span,
+.metric-card strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric-card span {
+  margin-bottom: 2px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.metric-card strong {
+  color: #20262c;
+  font-size: 14px;
+}
+
 .select-all {
   display: flex;
   align-items: center;
@@ -314,6 +374,12 @@ h1 {
   font-size: 11px;
 }
 
+.row-meta {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+}
+
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -341,8 +407,37 @@ h1 {
   background: var(--blue);
 }
 
+.status-pill.all::after,
+.all-dot {
+  background: #111821;
+}
+
 .other-dot {
   background: #cdd4da;
+}
+
+.priority-pill {
+  border-radius: 999px;
+  padding: 3px 7px;
+  color: #5b6570;
+  background: #eef1f3;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.priority-pill.high {
+  color: #7b3900;
+  background: #fff0dd;
+}
+
+.priority-pill.medium {
+  color: #305b25;
+  background: #eaf6e7;
+}
+
+.priority-pill.low {
+  color: #59636d;
+  background: #edf1f4;
 }
 
 .contact-stage {
@@ -408,6 +503,14 @@ h1 {
   font-size: 31px;
 }
 
+.account-label {
+  margin-bottom: 9px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .hero-contact h2 {
   margin-bottom: 3px;
   font-size: clamp(27px, 3vw, 36px);
@@ -417,6 +520,24 @@ h1 {
 .hero-contact p {
   margin-bottom: 24px;
   color: var(--text-muted);
+}
+
+.deal-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: -8px 0 22px;
+}
+
+.deal-strip span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: #3e4852;
+  background: #fbfcfd;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .action-row {
@@ -508,6 +629,11 @@ h1 {
   background: transparent;
   font-size: 13px;
   font-weight: 800;
+}
+
+.next-step-card {
+  border-color: #d6e8ce;
+  background: linear-gradient(180deg, #fff, #fbfff9);
 }
 
 .card-icon {

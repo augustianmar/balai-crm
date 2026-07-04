@@ -50,13 +50,25 @@
         font-weight: 800;
         text-decoration: none;
       }
+
+      .fallback {
+        margin: 14px 0 0;
+      }
+
+      .fallback a {
+        color: #182028;
+        background: #edf1f4;
+      }
     </style>
   </head>
   <body>
     <main>
       <h1>BALAI Customer Relationship Management</h1>
-      <p>Open the CRM prototype in a separate browser tab.</p>
-      <a href="./index.html" target="_blank" rel="noopener">Open CRM in new tab</a>
+      <p>Open the CRM prototype in a separate browser tab. If the browser blocks it, use the direct link below.</p>
+      <a href="./balai-crm-standalone.html" target="_blank" rel="noopener">Open CRM in new tab</a>
+      <p class="fallback">
+        <a href="./balai-crm-standalone.html">Open in this tab instead</a>
+      </p>
     </main>
   </body>
 </html>
