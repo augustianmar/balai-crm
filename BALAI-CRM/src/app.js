@@ -372,7 +372,7 @@ function renderOrbitMap() {
 function renderWorldMap() {
   return `
     <article class="world-map-panel ${state.mapEditMode ? "is-editing" : ""}">
-      <div class="map-title">
+      <div class="map-title world-title">
         <span>BALAI HOME</span>
         <strong>World Map</strong>
         <p>Shows company locations across the globe. Use the map menu to fine-tune saved marker positions.</p>
@@ -399,13 +399,18 @@ function worldMapSvg() {
   return `
     <svg class="world-map-art" viewBox="0 0 1000 500" aria-hidden="true" focusable="false">
       <defs>
-        <linearGradient id="balai-land-gradient" x1="0%" y1="10%" x2="100%" y2="90%">
-          <stop offset="0%" stop-color="#1b3654" />
-          <stop offset="54%" stop-color="#405f74" />
-          <stop offset="100%" stop-color="#7f8878" />
+        <linearGradient id="balai-land-gradient" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#efe8dc" />
+          <stop offset="47%" stop-color="#f8f5ef" />
+          <stop offset="100%" stop-color="#d1a46c" />
         </linearGradient>
+        <filter id="balai-paper-lift" x="-4%" y="-4%" width="108%" height="112%">
+          <feDropShadow dx="-3" dy="-3" stdDeviation="2.2" flood-color="#ffffff" flood-opacity="0.72" />
+          <feDropShadow dx="0" dy="9" stdDeviation="4.8" flood-color="#6e5234" flood-opacity="0.22" />
+        </filter>
       </defs>
-      <path class="land main-land" fill="url(#balai-land-gradient)" d="${worldMapPath}" />
+      <path class="land land-shadow" d="${worldMapPath}" />
+      <path class="land main-land" fill="url(#balai-land-gradient)" filter="url(#balai-paper-lift)" d="${worldMapPath}" />
     </svg>
   `;
 }
