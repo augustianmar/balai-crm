@@ -349,7 +349,7 @@ function renderOrbitMap() {
         <p>Companies orbit BALAI by priority. Drag bubbles from the menu when you want a custom layout.</p>
       </div>
       <div class="map-tools">
-        <button class="map-tool-toggle" type="button" data-action="toggle-map-menu" aria-label="Orbit map options"><span aria-hidden="true">•••</span></button>
+        <button class="map-tool-toggle" type="button" data-action="toggle-map-menu" aria-label="Orbit map options"><span class="dot-icon" aria-hidden="true"><i></i><i></i><i></i></span></button>
         ${state.mapMenuOpen ? `
           <div class="map-tool-menu">
             <button type="button" data-action="toggle-map-edit">${state.mapEditMode ? "Done placing markers" : "Edit marker positions"}</button>
@@ -378,7 +378,7 @@ function renderWorldMap() {
         <p>Shows company locations across the globe. Use the map menu to fine-tune saved marker positions.</p>
       </div>
       <div class="map-tools">
-        <button class="map-tool-toggle" type="button" data-action="toggle-map-menu" aria-label="World map options"><span aria-hidden="true">•••</span></button>
+        <button class="map-tool-toggle" type="button" data-action="toggle-map-menu" aria-label="World map options"><span class="dot-icon" aria-hidden="true"><i></i><i></i><i></i></span></button>
         ${state.mapMenuOpen ? `
           <div class="map-tool-menu">
             <button type="button" data-action="toggle-map-edit">${state.mapEditMode ? "Done placing markers" : "Edit marker positions"}</button>
@@ -398,7 +398,14 @@ function renderWorldMap() {
 function worldMapSvg() {
   return `
     <svg class="world-map-art" viewBox="0 0 1000 500" aria-hidden="true" focusable="false">
-      <path class="land main-land" d="${worldMapPath}" />
+      <defs>
+        <linearGradient id="balai-land-gradient" x1="0%" y1="10%" x2="100%" y2="90%">
+          <stop offset="0%" stop-color="#1b3654" />
+          <stop offset="54%" stop-color="#405f74" />
+          <stop offset="100%" stop-color="#7f8878" />
+        </linearGradient>
+      </defs>
+      <path class="land main-land" fill="url(#balai-land-gradient)" d="${worldMapPath}" />
     </svg>
   `;
 }
