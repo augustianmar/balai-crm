@@ -1,6 +1,8 @@
 # BALAI Customer Relationship Management
 
-Clean-start BALAI CRM interface for companies, contacts, deals, follow-up tasks, services, import/export backups, and browser-saved data. The interface uses BALAI branding with a cream, navy, and gold visual style.
+Clean-start BALAI CRM interface for companies, people contacts, company profiles, deals, follow-up tasks, services, import/export backups, and browser-saved data. The interface uses BALAI branding with a cream, navy, and gold visual style.
+
+The home page shows a BALAI-centered relationship system where companies surround the logo by priority. The Contacts section can switch between people and company profiles, with both types editable.
 
 ## Open
 

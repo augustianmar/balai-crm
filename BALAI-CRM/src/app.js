@@ -1,7 +1,7 @@
 const storageKey = "balai-crm-store-v4";
 const app = document.querySelector("#app");
 
-const countries = ["Indonesia", "Malaysia", "Singapore", "Others"];
+const countries = ["Finland", "Sweden", "Norway", "Indonesia", "Malaysia", "Philippines", "Singapore", "Others"];
 const services = [
   "Market Opportunity Assessment",
   "Market Entry & Partner Development",
@@ -34,8 +34,11 @@ const state = {
   selectedContactId: "",
   selectedCompanyId: "",
   selectedDealId: "",
+  contactMode: "people",
   modal: null,
   editId: null,
+  prefillService: "",
+  prefillCompanyId: "",
   moreOpen: false,
   notice: ""
 };
@@ -69,8 +72,17 @@ function loadStore() {
 
 function normalizeStore(next) {
   return {
-    contacts: next.contacts || [],
-    companies: next.companies || [],
+    contacts: (next.contacts || []).map((contact) => ({
+      ...contact,
+      country: contact.country || "Finland",
+      status: contact.status || "Lead",
+      priority: contact.priority || "Medium"
+    })),
+    companies: (next.companies || []).map((company) => ({
+      ...company,
+      country: company.country || "Finland",
+      priority: company.priority || "Medium"
+    })),
     deals: next.deals || [],
     tasks: next.tasks || [],
     automations: next.automations || emptyStore().automations,
@@ -116,7 +128,7 @@ function selectedContact() {
 }
 
 function selectedCompany() {
-  return store.companies.find((company) => company.id === state.selectedCompanyId) || null;
+  return store.companies.find((company) => company.id === state.selectedCompanyId) || store.companies[0] || null;
 }
 
 function selectedDeal() {
@@ -148,7 +160,9 @@ function filteredContacts() {
 function filteredCompanies() {
   const query = state.query.trim().toLowerCase();
   return store.companies.filter((company) => {
-    const haystack = [company.name, company.country, company.segment, company.notes].join(" ").toLowerCase();
+    const haystack = [company.name, company.country, company.segment, company.priority, company.website, company.notes]
+      .join(" ")
+      .toLowerCase();
     const countryMatch = state.country === "All" || company.country === state.country;
     return countryMatch && haystack.includes(query);
   });
@@ -249,40 +263,68 @@ function renderHome() {
   const t = totals();
   return `
     ${header(
-      "Home",
-      "A clean BALAI CRM workspace. Start by adding companies, contacts, deals, and reminders.",
+      "Welcome to BALAI",
+      "Your relationship map for companies, people, deals, and follow-ups.",
       `<button type="button" data-action="open-modal" data-modal="company">${navIcon("plus")} Add company</button>
        <button type="button" data-action="open-modal" data-modal="deal">${navIcon("sales")} Add deal</button>`
     )}
-    <section class="workspace-grid metrics-grid">
-      ${metric("Companies", t.companies, "Tourism operators or partners")}
-      ${metric("Contacts", t.contacts, "People inside those companies")}
-      ${metric("Open deals", t.openDeals, "Pipeline opportunities")}
-      ${metric("Pipeline", formatMoney(t.pipeline), "Total deal value")}
-    </section>
-    <section class="workspace-grid two-column">
-      <article class="workspace-card">
-        <div class="card-heading">
-          <h2>Start From Scratch</h2>
-          <button type="button" data-action="open-modal" data-modal="contact">Add contact</button>
+    <section class="home-system-layout">
+      <article class="relationship-system">
+        <div class="orbit-ring orbit-high"></div>
+        <div class="orbit-ring orbit-medium"></div>
+        <div class="orbit-ring orbit-low"></div>
+        <div class="system-core">
+          <img src="./assets/balai-logo.png" alt="BALAI" />
+          <span>BALAI CRM</span>
+          <strong>Relationship Center</strong>
         </div>
-        ${emptyHint("No fake contacts are loaded. Your real records will save in this browser automatically.")}
+        ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
       </article>
-      <article class="workspace-card">
-        <div class="card-heading">
-          <h2>Data Safety</h2>
-          <button type="button" data-action="export">Backup now</button>
-        </div>
-        <p class="insight-line">Data is saved to browser local storage after every edit.</p>
-        <p class="insight-line">Use Export regularly to download a JSON backup.</p>
-        <p class="insight-line">Use Import to restore your CRM data on another browser or laptop.</p>
-      </article>
+      <aside class="system-summary">
+        ${metric("Companies", t.companies, "Company profiles")}
+        ${metric("People", t.contacts, "Linked contacts")}
+        ${metric("Open deals", t.openDeals, "Active opportunities")}
+        ${metric("Pipeline", formatMoney(t.pipeline), "Total deal value")}
+        <article class="workspace-card">
+          <div class="card-heading">
+            <h2>Data Safety</h2>
+            <button type="button" data-action="export">Backup now</button>
+          </div>
+          <p class="insight-line">Your records stay saved in this browser after every edit.</p>
+          <p class="insight-line">Use Export regularly so important contacts are not trapped on one device.</p>
+        </article>
+      </aside>
     </section>
-    <section class="workspace-grid three-column">
-      ${quickStart("Companies", "Add Finnish tourism companies first.", "company")}
-      ${quickStart("Contacts", "Add people connected to each company.", "contact")}
-      ${quickStart("Deals", "Create opportunities linked to services and stages.", "deal")}
-    </section>
+  `;
+}
+
+function companyPlanets() {
+  const companies = [...store.companies]
+    .sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority) || a.name.localeCompare(b.name))
+    .slice(0, 14);
+  return companies.map((company, index) => companyPlanet(company, index, companies.length)).join("");
+}
+
+function companyPlanet(company, index, total) {
+  const radius = companyOrbitRadius(company.priority);
+  const angle = total === 1 ? -90 : -90 + (index * 360) / total;
+  const size = companyPlanetSize(company.priority);
+  const x = Math.cos((angle * Math.PI) / 180) * radius;
+  const y = Math.sin((angle * Math.PI) / 180) * radius;
+  const contacts = store.contacts.filter((contact) => contact.companyId === company.id).length;
+  return `
+    <button
+      class="company-planet ${priorityClass(company.priority)}"
+      type="button"
+      data-action="open-company"
+      data-id="${company.id}"
+      style="--planet-x:${x}px; --planet-y:${y}px; --planet-size:${size}px;"
+      title="${escapeHtml(company.name)}"
+    >
+      <span>${companyInitials(company)}</span>
+      <strong>${escapeHtml(company.name || "Unnamed company")}</strong>
+      <small>${company.priority || "Medium"} / ${contacts} people</small>
+    </button>
   `;
 }
 
@@ -303,30 +345,44 @@ function renderSearch() {
 
 function renderContacts() {
   const contact = selectedContact();
+  const company = selectedCompany();
+  const isCompanies = state.contactMode === "companies";
   return `
     ${header(
       "Contacts",
-      "People, companies, and relationship details.",
+      "Switch between people and company profiles.",
       `<button type="button" data-action="open-modal" data-modal="company">${navIcon("home")} Add company</button>
        <button type="button" data-action="open-modal" data-modal="contact">${navIcon("plus")} Add contact</button>`
     )}
     <section class="contacts-layout">
       <aside class="people-panel crm-panel">
         <header class="panel-header compact">
-          <div><p class="eyebrow">People</p><h1>Contacts</h1></div>
-          <button title="Add contact" type="button" data-action="open-modal" data-modal="contact">${navIcon("plus")}</button>
+          <div><p class="eyebrow">${isCompanies ? "Companies" : "People"}</p><h1>Contacts</h1></div>
+          <button title="${isCompanies ? "Add company" : "Add contact"}" type="button" data-action="open-modal" data-modal="${isCompanies ? "company" : "contact"}">${navIcon("plus")}</button>
         </header>
-        ${inlineSearch("Search contacts")}
+        <div class="contact-tabs">
+          <button class="${state.contactMode === "people" ? "active" : ""}" type="button" data-action="set-contact-mode" data-mode="people">People</button>
+          <button class="${state.contactMode === "companies" ? "active" : ""}" type="button" data-action="set-contact-mode" data-mode="companies">Companies</button>
+        </div>
+        ${inlineSearch(isCompanies ? "Search companies" : "Search people")}
         <div class="market-filter">${countryButtons()}</div>
         <div class="contact-list">
-          ${filteredContacts().length ? filteredContacts().map(contactRow).join("") : emptyHint("No contacts yet. Add your first real contact.")}
+          ${
+            isCompanies
+              ? filteredCompanies().length
+                ? filteredCompanies().map(companyRow).join("")
+                : emptyHint("No companies yet. Add your first company profile.")
+              : filteredContacts().length
+                ? filteredContacts().map(contactRow).join("")
+                : emptyHint("No people yet. Add your first real contact.")
+          }
         </div>
       </aside>
       <section class="contact-stage crm-panel">
-        ${contact ? contactDetail(contact) : emptyContactStage()}
+        ${isCompanies ? company ? companyDetail(company) : emptyCompanyStage() : contact ? contactDetail(contact) : emptyContactStage()}
       </section>
       <aside class="info-panel crm-panel">
-        ${contact ? infoPanel(contact) : emptySideInfo()}
+        ${isCompanies ? company ? companyInfoPanel(company) : emptySideInfo("Company info") : contact ? infoPanel(contact) : emptySideInfo("Contact info")}
       </aside>
     </section>
   `;
@@ -486,6 +542,40 @@ function contactDetail(contact) {
   `;
 }
 
+function companyDetail(company) {
+  const people = store.contacts.filter((contact) => contact.companyId === company.id);
+  const deals = store.deals.filter((deal) => deal.companyId === company.id);
+  const pipeline = deals.reduce((sum, deal) => sum + Number(deal.value || 0), 0);
+  return `
+    <header class="stage-toolbar">
+      <div class="segmented">${priorities.map((priority) => `<button class="${company.priority === priority ? "active" : ""}" type="button" data-action="set-company-priority" data-priority="${priority}">${priority}<span class="${priority.toLowerCase()}-dot"></span></button>`).join("")}</div>
+    </header>
+    <section class="hero-contact company-hero">
+      <span class="profile-photo company-photo">${companyInitials(company)}</span>
+      <p class="account-label">${company.country || "No country"} / ${company.segment || "Company"}</p>
+      <h2>${escapeHtml(company.name || "Unnamed company")}</h2>
+      <p>${company.website || "No website yet"}</p>
+      <div class="deal-strip">
+        <span>${company.priority || "Medium"} priority</span>
+        <span>${people.length} people</span>
+        <span>${deals.length} deals</span>
+        <span>${formatMoney(pipeline)}</span>
+      </div>
+      <div class="action-row">
+        <button class="action-button" type="button" data-action="edit-selected-company"><span>${navIcon("home")}</span>Edit</button>
+        <button class="action-button" type="button" data-action="open-modal" data-modal="contact" data-company-id="${company.id}"><span>${navIcon("contacts")}</span>Add person</button>
+        <button class="action-button" type="button" data-action="open-modal" data-modal="deal" data-company-id="${company.id}"><span>${navIcon("sales")}</span>Add deal</button>
+        <button class="action-button" type="button" data-action="delete-company"><span>${actionIcon("More")}</span>Delete</button>
+      </div>
+    </section>
+    <section class="activity">
+      <article class="activity-card next-step-card"><div><h4>Company notes</h4><p>${company.notes || "No notes yet"}</p><button type="button" data-action="edit-selected-company">Edit company profile</button></div><span class="card-icon">${navIcon("task")}</span></article>
+      <article class="activity-card company-linked-card"><div><h4>Linked people</h4>${people.length ? people.map((contact) => `<button class="link-row" type="button" data-action="open-contact" data-id="${contact.id}">${contactName(contact.id)}<small>${contact.role || contact.email || "No role yet"}</small></button>`).join("") : `<p>No people linked yet.</p>`}</div><span class="card-icon">${navIcon("contacts")}</span></article>
+      <article class="activity-card company-linked-card"><div><h4>Linked deals</h4>${deals.length ? deals.map((deal) => `<button class="link-row" type="button" data-action="edit-deal" data-id="${deal.id}">${escapeHtml(deal.title)}<small>${deal.stage} / ${formatMoney(deal.value)}</small></button>`).join("") : `<p>No deals linked yet.</p>`}</div><span class="card-icon">${navIcon("sales")}</span></article>
+    </section>
+  `;
+}
+
 function infoPanel(contact) {
   return `
     <header class="info-header"><span>${navIcon("info")}</span><div><h2>Contact info</h2><p>${contactName(contact.id)}</p></div></header>
@@ -494,12 +584,26 @@ function infoPanel(contact) {
   `;
 }
 
+function companyInfoPanel(company) {
+  const people = store.contacts.filter((contact) => contact.companyId === company.id).length;
+  const deals = store.deals.filter((deal) => deal.companyId === company.id).length;
+  return `
+    <header class="info-header"><span>${navIcon("info")}</span><div><h2>Company info</h2><p>${escapeHtml(company.name || "Unnamed company")}</p></div></header>
+    ${infoSection("General", [["Company Name", company.name], ["Company Type", company.segment || "-"], ["Country", company.country], ["Priority", company.priority]])}
+    ${infoSection("Relationship", [["Linked People", people], ["Linked Deals", deals], ["Website", company.website || "-"], ["Notes", company.notes || "-"]])}
+  `;
+}
+
 function emptyContactStage() {
   return `<section class="empty-stage">${emptyCard("No contact selected", "Add a real contact to begin.", "contact")}</section>`;
 }
 
-function emptySideInfo() {
-  return `<header class="info-header"><span>${navIcon("info")}</span><div><h2>Contact info</h2><p>Empty</p></div></header>`;
+function emptyCompanyStage() {
+  return `<section class="empty-stage">${emptyCard("No company selected", "Add a company profile to begin.", "company")}</section>`;
+}
+
+function emptySideInfo(title = "Contact info") {
+  return `<header class="info-header"><span>${navIcon("info")}</span><div><h2>${title}</h2><p>Empty</p></div></header>`;
 }
 
 function searchControls() {
@@ -533,6 +637,18 @@ function contactRow(contact) {
   `;
 }
 
+function companyRow(company) {
+  const people = store.contacts.filter((contact) => contact.companyId === company.id).length;
+  const deals = store.deals.filter((deal) => deal.companyId === company.id).length;
+  return `
+    <button class="contact-row company-row ${state.selectedCompanyId === company.id ? "selected" : ""}" type="button" data-action="open-company" data-id="${company.id}">
+      <span class="mini-avatar company-avatar">${companyInitials(company)}</span>
+      <span class="contact-copy"><strong>${escapeHtml(company.name || "Unnamed company")}</strong><small>${company.segment || "Company"} / ${company.country || "No country"}</small><small>${people} people / ${deals} deals</small></span>
+      <span class="row-meta"><span class="priority-pill ${priorityClass(company.priority)}">${company.priority || "Medium"}</span></span>
+    </button>
+  `;
+}
+
 function contactMini(contact) {
   return `<button class="compact-contact" type="button" data-action="open-contact" data-id="${contact.id}">${avatar(contact, "tiny-avatar")}<span><strong>${contactName(contact.id)}</strong><small>${companyName(contact.companyId) || "No company"} / ${contact.country}</small></span><b>${contact.priority}</b></button>`;
 }
@@ -549,7 +665,7 @@ function renderSearchItem(item) {
   const type = item.stage ? "Deal" : item.companyId ? "Contact" : "Company";
   const title = type === "Deal" ? item.title : type === "Contact" ? contactName(item.id) : item.name;
   const detail = type === "Deal" ? `${item.stage} / ${formatMoney(item.value)}` : type === "Contact" ? `${companyName(item.companyId) || "No company"} / ${item.country}` : `${item.country} / ${item.segment || "Company"}`;
-  const action = type === "Deal" ? "edit-deal" : type === "Contact" ? "open-contact" : "edit-company";
+  const action = type === "Deal" ? "edit-deal" : type === "Contact" ? "open-contact" : "open-company";
   return `<article class="workspace-card result-card"><div class="card-heading"><div><h2>${title}</h2><p>${type}</p></div></div><p>${detail}</p><button type="button" data-action="${action}" data-id="${item.id}">Open</button></article>`;
 }
 
@@ -586,7 +702,7 @@ function contactForm() {
   return formShell(state.editId ? "Edit contact" : "Add contact", "contactForm", `
     ${input("firstName", "First name", contact.firstName)}
     ${input("lastName", "Last name", contact.lastName)}
-    ${select("companyId", "Company", contact.companyId, [["", "No company"], ...store.companies.map((company) => [company.id, company.name])])}
+    ${select("companyId", "Company", contact.companyId || state.prefillCompanyId, [["", "No company"], ...store.companies.map((company) => [company.id, company.name])])}
     ${input("role", "Role", contact.role)}
     ${input("email", "Email", contact.email)}
     ${input("phone", "Phone", contact.phone)}
@@ -603,7 +719,8 @@ function companyForm() {
   return formShell(state.editId ? "Edit company" : "Add company", "companyForm", `
     ${input("name", "Company name", company.name)}
     ${select("country", "Country", company.country, countries)}
-    ${input("segment", "Segment", company.segment)}
+    ${input("segment", "Company type", company.segment)}
+    ${select("priority", "Priority", company.priority, priorities)}
     ${input("website", "Website", company.website)}
     ${textarea("notes", "Notes", company.notes)}
   `);
@@ -613,7 +730,7 @@ function dealForm() {
   const deal = state.editId ? store.deals.find((item) => item.id === state.editId) : {};
   return formShell(state.editId ? "Edit deal" : "Add deal", "dealForm", `
     ${input("title", "Deal title", deal.title)}
-    ${select("companyId", "Company", deal.companyId, [["", "No company"], ...store.companies.map((company) => [company.id, company.name])])}
+    ${select("companyId", "Company", deal.companyId || state.prefillCompanyId, [["", "No company"], ...store.companies.map((company) => [company.id, company.name])])}
     ${select("contactId", "Contact", deal.contactId, [["", "No contact"], ...store.contacts.map((contact) => [contact.id, contactName(contact.id)])])}
     ${select("country", "Country", deal.country, countries)}
     ${select("service", "Service", deal.service || state.prefillService, services)}
@@ -680,10 +797,13 @@ function handleAction(event) {
     state.modal = el.dataset.modal;
     state.editId = null;
     state.prefillService = el.dataset.service || "";
+    state.prefillCompanyId = el.dataset.companyId || "";
     render();
   } else if (action === "close-modal") {
     state.modal = null;
     state.editId = null;
+    state.prefillService = "";
+    state.prefillCompanyId = "";
     render();
   } else if (action === "set-country") {
     state.country = el.dataset.country;
@@ -691,9 +811,20 @@ function handleAction(event) {
   } else if (action === "set-stage-filter") {
     state.stage = el.dataset.stage;
     render();
+  } else if (action === "set-contact-mode") {
+    state.contactMode = el.dataset.mode;
+    state.moreOpen = false;
+    render();
   } else if (action === "open-contact") {
     state.selectedContactId = el.dataset.id;
+    state.contactMode = "people";
     state.view = "contacts";
+    render();
+  } else if (action === "open-company") {
+    state.selectedCompanyId = el.dataset.id;
+    state.contactMode = "companies";
+    state.view = "contacts";
+    state.moreOpen = false;
     render();
   } else if (action === "toggle-more") {
     state.moreOpen = !state.moreOpen;
@@ -711,10 +842,18 @@ function handleAction(event) {
     setTimeout(() => document.querySelector("#pictureInput")?.click(), 0);
   } else if (action === "set-contact-status") {
     updateContact(state.selectedContactId, { status: el.dataset.status });
+  } else if (action === "set-company-priority") {
+    updateCompany(state.selectedCompanyId || selectedCompany()?.id, { priority: el.dataset.priority });
   } else if (action === "edit-company") {
     state.modal = "company";
     state.editId = el.dataset.id;
     render();
+  } else if (action === "edit-selected-company") {
+    state.modal = "company";
+    state.editId = state.selectedCompanyId || selectedCompany()?.id || "";
+    render();
+  } else if (action === "delete-company") {
+    deleteCompany();
   } else if (action === "edit-deal") {
     state.modal = "deal";
     state.editId = el.dataset.id;
@@ -759,6 +898,7 @@ function saveContact(event) {
   };
   store.contacts = existing ? store.contacts.map((item) => item.id === existing.id ? next : item) : [next, ...store.contacts];
   state.selectedContactId = next.id;
+  state.contactMode = "people";
   state.view = "contacts";
   closeAndPersist("Contact saved");
 }
@@ -773,11 +913,14 @@ function saveCompany(event) {
     name: data.name.trim(),
     country: data.country,
     segment: data.segment.trim(),
+    priority: data.priority || "Medium",
     website: data.website.trim(),
     notes: data.notes.trim()
   };
   store.companies = existing ? store.companies.map((item) => item.id === existing.id ? next : item) : [next, ...store.companies];
   state.selectedCompanyId = next.id;
+  state.contactMode = "companies";
+  state.view = "contacts";
   closeAndPersist("Company saved");
 }
 
@@ -824,6 +967,8 @@ function saveTask(event) {
 function closeAndPersist(message) {
   state.modal = null;
   state.editId = null;
+  state.prefillService = "";
+  state.prefillCompanyId = "";
   persist(message);
 }
 
@@ -840,6 +985,13 @@ function updateContact(id, patch, message = "Contact updated") {
   persist(message);
 }
 
+function updateCompany(id, patch, message = "Company updated") {
+  if (!id) return;
+  store.companies = store.companies.map((company) => company.id === id ? { ...company, ...patch } : company);
+  state.selectedCompanyId = id;
+  persist(message);
+}
+
 function deleteContact() {
   const contact = store.contacts.find((item) => item.id === state.selectedContactId);
   if (!contact || !confirm(`Delete ${contactName(contact.id)}?`)) return;
@@ -849,6 +1001,16 @@ function deleteContact() {
   state.selectedContactId = store.contacts[0]?.id || "";
   state.moreOpen = false;
   persist("Contact deleted");
+}
+
+function deleteCompany() {
+  const company = selectedCompany();
+  if (!company || !confirm(`Delete ${company.name || "this company"}? Linked people and deals will stay, but the company link will be cleared.`)) return;
+  store.companies = store.companies.filter((item) => item.id !== company.id);
+  store.contacts = store.contacts.map((contact) => contact.companyId === company.id ? { ...contact, companyId: "" } : contact);
+  store.deals = store.deals.map((deal) => deal.companyId === company.id ? { ...deal, companyId: "" } : deal);
+  state.selectedCompanyId = store.companies[0]?.id || "";
+  persist("Company deleted");
 }
 
 function exportData() {
@@ -890,10 +1052,36 @@ function companyName(id) {
   return store.companies.find((company) => company.id === id)?.name || "";
 }
 
+function companyInitials(company) {
+  return String(company?.name || "BA")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase() || "BA";
+}
+
 function contactName(id) {
   const contact = store.contacts.find((item) => item.id === id);
   if (!contact) return "";
   return `${contact.firstName || ""} ${contact.lastName || ""}`.trim() || "Unnamed contact";
+}
+
+function priorityRank(priority = "Medium") {
+  return { High: 0, Medium: 1, Low: 2 }[priority] ?? 1;
+}
+
+function priorityClass(priority = "Medium") {
+  return String(priority || "Medium").toLowerCase();
+}
+
+function companyOrbitRadius(priority = "Medium") {
+  return { High: 145, Medium: 215, Low: 285 }[priority] || 215;
+}
+
+function companyPlanetSize(priority = "Medium") {
+  return { High: 92, Medium: 78, Low: 66 }[priority] || 78;
 }
 
 function sumDeals(stage) {

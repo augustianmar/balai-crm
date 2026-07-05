@@ -472,10 +472,45 @@ h1 {
   background: #ece7df;
 }
 
+.high-dot {
+  background: var(--gold);
+}
+
+.medium-dot {
+  background: var(--green);
+}
+
+.low-dot {
+  background: #9ba5ad;
+}
+
 .contact-stage {
   display: flex;
   flex-direction: column;
   background: var(--cream);
+}
+
+.contact-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  padding: 14px 18px 0;
+}
+
+.contact-tabs button {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: #6b6258;
+  background: #fffdf8;
+  font-weight: 900;
+}
+
+.contact-tabs button.active,
+.contact-tabs button:hover {
+  border-color: #ceb386;
+  color: var(--navy);
+  background: #f4eadb;
 }
 
 .stage-toolbar {
@@ -545,6 +580,19 @@ h1 {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.company-avatar,
+.company-photo {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.72), transparent 22%),
+    linear-gradient(135deg, var(--navy), #174977 58%, var(--gold));
+}
+
+.company-photo {
+  color: #fffaf1;
+  font-family: var(--font-display);
+  font-size: 40px;
 }
 
 .account-label {
@@ -707,6 +755,36 @@ h1 {
   font-weight: 800;
 }
 
+.company-linked-card {
+  align-items: flex-start;
+}
+
+.company-linked-card > div {
+  width: 100%;
+}
+
+.link-row {
+  display: grid;
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid var(--line) !important;
+  border-radius: 7px;
+  padding: 10px 12px !important;
+  color: var(--navy) !important;
+  background: #fbf6ed !important;
+  text-align: left;
+}
+
+.link-row:hover {
+  border-color: #ceb386 !important;
+  background: #f4eadb !important;
+}
+
+.link-row small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
 .next-step-card {
   border-color: #d6e8ce;
   background: linear-gradient(180deg, #fffdf8, #f7f0e4);
@@ -826,6 +904,193 @@ h1 {
   display: grid;
   gap: 18px;
   padding: 22px 30px 0;
+}
+
+.home-system-layout {
+  display: grid;
+  grid-template-columns: minmax(520px, 1fr) minmax(260px, 360px);
+  gap: 22px;
+  padding: 28px 30px;
+}
+
+.relationship-system {
+  position: relative;
+  min-height: 660px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at center, rgba(255, 253, 248, 0.96) 0 16%, rgba(244, 239, 229, 0.7) 40%, rgba(255, 253, 248, 0.92) 100%),
+    linear-gradient(135deg, #fffdf8, #f4efe5);
+  box-shadow: var(--shadow);
+}
+
+.orbit-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid rgba(185, 133, 58, 0.24);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.orbit-high {
+  width: 320px;
+  height: 320px;
+}
+
+.orbit-medium {
+  width: 460px;
+  height: 460px;
+}
+
+.orbit-low {
+  width: 590px;
+  height: 590px;
+}
+
+.system-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  width: 170px;
+  min-height: 170px;
+  padding: 18px;
+  border: 1px solid rgba(185, 133, 58, 0.36);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: 0 24px 60px rgba(8, 38, 75, 0.14);
+  transform: translate(-50%, -50%);
+}
+
+.system-core img {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+}
+
+.system-core span {
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.system-core strong {
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1;
+  text-align: center;
+}
+
+.company-planet {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  width: var(--planet-size);
+  min-height: var(--planet-size);
+  border: 1px solid rgba(185, 133, 58, 0.32);
+  border-radius: 50%;
+  padding: 10px;
+  color: var(--navy);
+  background: rgba(255, 253, 248, 0.95);
+  box-shadow: 0 14px 36px rgba(8, 38, 75, 0.12);
+  text-align: center;
+  transform: translate(calc(-50% + var(--planet-x)), calc(-50% + var(--planet-y)));
+}
+
+.company-planet.high {
+  border-color: rgba(185, 133, 58, 0.72);
+  background: linear-gradient(135deg, #fffdf8, #f5dfba);
+}
+
+.company-planet.medium {
+  background: linear-gradient(135deg, #fffdf8, #e6eee0);
+}
+
+.company-planet.low {
+  background: linear-gradient(135deg, #fffdf8, #ece7df);
+}
+
+.company-planet:hover {
+  border-color: var(--gold);
+  box-shadow: 0 18px 44px rgba(8, 38, 75, 0.18);
+}
+
+.company-planet span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 3px;
+  border-radius: 50%;
+  color: #fffaf1;
+  background: linear-gradient(135deg, var(--navy), var(--gold));
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.company-planet strong,
+.company-planet small {
+  display: block;
+  max-width: 112px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.company-planet strong {
+  font-size: 12px;
+}
+
+.company-planet small {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.empty-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  width: min(300px, calc(100% - 40px));
+  padding-top: 210px;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.empty-orbit button {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 14px;
+  color: var(--navy);
+  background: #fffdf8;
+  font-weight: 800;
+}
+
+.empty-orbit button:hover {
+  border-color: #ceb386;
+  background: #f4eadb;
+}
+
+.system-summary {
+  display: grid;
+  align-content: start;
+  gap: 16px;
 }
 
 .metrics-grid {
@@ -1387,6 +1652,14 @@ h1 {
     grid-template-columns: minmax(240px, 320px) 1fr;
   }
 
+  .home-system-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .system-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .metrics-grid,
   .three-column,
   .search-results,
@@ -1455,6 +1728,20 @@ h1 {
   .pipeline-board {
     grid-template-columns: 1fr;
     padding-inline: 18px;
+  }
+
+  .home-system-layout {
+    overflow-x: auto;
+    padding-inline: 18px;
+  }
+
+  .relationship-system {
+    min-width: 640px;
+    min-height: 620px;
+  }
+
+  .system-summary {
+    grid-template-columns: 1fr;
   }
 
   .contacts-layout {
