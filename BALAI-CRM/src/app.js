@@ -362,7 +362,7 @@ function renderOrbitMap() {
       <div class="orbit-ring orbit-medium"></div>
       <div class="orbit-ring orbit-low"></div>
       <div class="system-core">
-        <img src="./assets/balai-logo.png" alt="BALAI" />
+        <img src="./assets/balai-orbit-logo.png" alt="BALAI" />
       </div>
       ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
     </article>
