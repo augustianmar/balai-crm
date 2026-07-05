@@ -410,7 +410,7 @@ function companyPlanets() {
 }
 
 function companyPlanet(company, index, total) {
-  const point = companyOrbitPoint(company, index, total);
+  const positionStyle = companyOrbitStyle(company, index, total);
   const size = companyPlanetSize(company.priority);
   const expanded = companyPlanetExpandedSize(company.priority);
   const contacts = store.contacts.filter((contact) => contact.companyId === company.id).length;
@@ -420,7 +420,7 @@ function companyPlanet(company, index, total) {
       type="button"
       data-action="open-company"
       data-id="${company.id}"
-      style="--orbit-left:${point.x}%; --orbit-top:${point.y}%; --planet-size:${size}px; --planet-expanded:${expanded}px;"
+      style="${positionStyle} --planet-size:${size}px; --planet-expanded:${expanded}px;"
       title="${escapeHtml(company.name)}"
     >
       ${companyPlanetVisual(company)}
@@ -1354,15 +1354,14 @@ function normalizeMapPosition(value) {
   return cleanMapPoint(x, y);
 }
 
-function companyOrbitPoint(company, index, total) {
+function companyOrbitStyle(company, index, total) {
   const manual = normalizeMapPosition(company.orbitPosition);
-  if (manual) return manual;
+  if (manual) return `--orbit-left:${manual.x}%; --orbit-top:${manual.y}%;`;
   const radius = companyOrbitRadius(company.priority);
   const angle = total === 1 ? -90 : -90 + (index * 360) / total;
-  return cleanMapPoint(
-    50 + Math.cos((angle * Math.PI) / 180) * radius,
-    50 + Math.sin((angle * Math.PI) / 180) * radius
-  );
+  const x = Math.round(Math.cos((angle * Math.PI) / 180) * radius);
+  const y = Math.round(Math.sin((angle * Math.PI) / 180) * radius);
+  return `--orbit-left:calc(50% + ${x}px); --orbit-top:calc(50% + ${y}px);`;
 }
 
 function placeKey(value) {
@@ -1374,15 +1373,15 @@ function placeKey(value) {
 }
 
 function companyOrbitRadius(priority = "Medium") {
-  return { High: 19, Medium: 30, Low: 40 }[priority] || 30;
+  return { High: 140, Medium: 215, Low: 280 }[priority] || 215;
 }
 
 function companyPlanetSize(priority = "Medium") {
-  return { High: 38, Medium: 32, Low: 28 }[priority] || 32;
+  return { High: 38, Medium: 34, Low: 30 }[priority] || 34;
 }
 
 function companyPlanetExpandedSize(priority = "Medium") {
-  return { High: 88, Medium: 78, Low: 70 }[priority] || 78;
+  return { High: 78, Medium: 72, Low: 66 }[priority] || 72;
 }
 
 function sumDeals(stage) {

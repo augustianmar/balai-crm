@@ -948,8 +948,8 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
-    radial-gradient(circle at 50% 48%, rgba(185, 133, 58, 0.16), transparent 10rem),
-    radial-gradient(circle at center, rgba(255, 253, 248, 0.96) 0 16%, rgba(244, 239, 229, 0.7) 40%, rgba(255, 253, 248, 0.92) 100%),
+    radial-gradient(circle at 50% 50%, rgba(185, 133, 58, 0.13), transparent 9rem),
+    radial-gradient(circle at center, rgba(255, 253, 248, 0.98) 0 12%, rgba(244, 239, 229, 0.54) 43%, rgba(255, 253, 248, 0.94) 100%),
     linear-gradient(135deg, #fffdf8, #f4efe5);
   box-shadow: 0 24px 70px rgba(8, 38, 75, 0.1);
 }
@@ -958,25 +958,26 @@ h1 {
   position: absolute;
   top: 50%;
   left: 50%;
-  border: 1px solid rgba(185, 133, 58, 0.24);
+  border: 1px solid rgba(185, 133, 58, 0.16);
   border-radius: 50%;
+  box-shadow: 0 0 40px rgba(185, 133, 58, 0.035);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
 .orbit-high {
-  width: 320px;
-  height: 320px;
+  width: 280px;
+  height: 280px;
 }
 
 .orbit-medium {
-  width: 460px;
-  height: 460px;
+  width: 430px;
+  height: 430px;
 }
 
 .orbit-low {
-  width: 590px;
-  height: 590px;
+  width: 560px;
+  height: 560px;
 }
 
 .system-core {
@@ -985,26 +986,28 @@ h1 {
   left: 50%;
   z-index: 5;
   display: grid;
-  justify-items: center;
-  align-items: center;
-  width: 96px;
-  height: 96px;
-  padding: 12px;
-  border: 1px solid rgba(185, 133, 58, 0.36);
+  place-items: center;
+  box-sizing: border-box;
+  width: 112px;
+  height: 112px;
+  overflow: hidden;
+  border: 1px solid rgba(185, 133, 58, 0.42);
   border-radius: 50%;
   background:
     linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(251, 246, 237, 0.96));
   box-shadow:
     0 24px 60px rgba(8, 38, 75, 0.14),
-    inset 0 0 0 8px rgba(185, 133, 58, 0.06);
+    inset 0 0 0 7px rgba(185, 133, 58, 0.06),
+    inset 0 0 0 1px rgba(255, 253, 248, 0.86);
   transform: translate(-50%, -50%);
   transition: box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .system-core img {
-  width: 76px;
-  height: 76px;
-  object-fit: contain;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .system-core:hover {
@@ -1021,25 +1024,28 @@ h1 {
   left: var(--orbit-left);
   z-index: 4;
   display: grid;
-  justify-items: center;
-  align-content: center;
+  place-items: center;
+  box-sizing: border-box;
   width: var(--planet-size);
-  min-height: var(--planet-size);
+  height: var(--planet-size);
+  min-width: var(--planet-size);
+  min-height: 0;
+  overflow: visible;
   border: 1px solid rgba(185, 133, 58, 0.32);
   border-radius: 50%;
-  padding: 10px;
+  padding: 4px;
   color: var(--navy);
   background: linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(251, 246, 237, 0.95));
   box-shadow:
-    0 14px 36px rgba(8, 38, 75, 0.12),
-    inset 0 0 0 5px rgba(255, 253, 248, 0.68);
+    0 10px 26px rgba(8, 38, 75, 0.11),
+    inset 0 0 0 3px rgba(255, 253, 248, 0.72);
   text-align: center;
   transform: translate(-50%, -50%);
   transition:
     border-color 0.16s ease,
     box-shadow 0.16s ease,
     filter 0.16s ease,
-    min-height 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
     width 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -1059,7 +1065,7 @@ h1 {
 .company-planet:hover {
   z-index: 24;
   width: var(--planet-expanded);
-  min-height: var(--planet-expanded);
+  height: var(--planet-expanded);
   border-color: var(--gold);
   box-shadow:
     0 22px 54px rgba(8, 38, 75, 0.2),
@@ -1074,7 +1080,7 @@ h1 {
 .company-planet.is-dragging {
   z-index: 30;
   width: var(--planet-expanded);
-  min-height: var(--planet-expanded);
+  height: var(--planet-expanded);
   cursor: grabbing;
   filter: drop-shadow(0 22px 30px rgba(8, 38, 75, 0.18));
 }
@@ -1082,8 +1088,9 @@ h1 {
 .company-planet > span {
   display: grid;
   place-items: center;
-  width: calc(var(--planet-size) - 8px);
-  height: calc(var(--planet-size) - 8px);
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
   margin: 0;
   border-radius: 50%;
   color: #fffaf1;
@@ -1096,10 +1103,12 @@ h1 {
 
 .company-planet .planet-image {
   overflow: hidden;
-  width: calc(var(--planet-size) - 8px);
-  height: calc(var(--planet-size) - 8px);
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
   margin: 0;
   border: 1px solid rgba(255, 253, 248, 0.96);
+  border-radius: 50%;
   background: #efe8db;
   box-shadow: 0 8px 18px rgba(8, 38, 75, 0.12);
   transition: height 0.2s ease, width 0.2s ease;
@@ -1117,8 +1126,8 @@ h1 {
 .company-planet:hover .planet-image,
 .company-planet:focus-visible .planet-image,
 .company-planet.is-dragging .planet-image {
-  width: calc(var(--planet-expanded) - 26px);
-  height: calc(var(--planet-expanded) - 26px);
+  width: 100%;
+  height: 100%;
   font-size: 17px;
 }
 
