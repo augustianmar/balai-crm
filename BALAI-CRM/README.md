@@ -2,7 +2,7 @@
 
 Clean-start BALAI CRM interface for companies, people contacts, company profiles, deals, follow-up tasks, services, import/export backups, and browser-saved data. The interface uses BALAI branding with a cream, navy, and gold visual style.
 
-The home page shows a BALAI-centered relationship system where companies surround the logo by priority. The Contacts section can switch between people and company profiles, with both types editable. Company profiles support pictures, and those pictures appear in the home relationship system.
+The home page can switch between a BALAI-centered orbit map and a classy world map. Companies surround the logo by priority in the orbit view, and company markers appear on the world map by saved city/country location. The Contacts section can switch between people and company profiles, with both types editable. Company profiles support location, pictures, and priority.
 
 ## Open
 

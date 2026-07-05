@@ -12,6 +12,28 @@ const services = [
 ];
 const dealStages = ["New lead", "Qualified", "Proposal sent", "Follow-up", "Client", "Lost"];
 const priorities = ["High", "Medium", "Low"];
+const knownPlaces = {
+  finland: [64.9, 26.0],
+  rovaniemi: [66.5, 25.73],
+  helsinki: [60.17, 24.94],
+  oulu: [65.01, 25.47],
+  tampere: [61.5, 23.76],
+  turku: [60.45, 22.27],
+  sweden: [62.0, 15.0],
+  stockholm: [59.33, 18.07],
+  norway: [61.0, 8.0],
+  oslo: [59.91, 10.75],
+  indonesia: [-2.5, 118.0],
+  jakarta: [-6.2, 106.82],
+  bali: [-8.34, 115.09],
+  denpasar: [-8.65, 115.22],
+  malaysia: [4.21, 101.98],
+  "kuala lumpur": [3.14, 101.69],
+  philippines: [12.88, 121.77],
+  manila: [14.6, 120.98],
+  cebu: [10.32, 123.9],
+  singapore: [1.35, 103.82]
+};
 
 const navItems = [
   ["Search", "search"],
@@ -35,6 +57,7 @@ const state = {
   selectedCompanyId: "",
   selectedDealId: "",
   contactMode: "people",
+  homeMode: "orbit",
   modal: null,
   editId: null,
   prefillService: "",
@@ -81,6 +104,7 @@ function normalizeStore(next) {
     })),
     companies: (next.companies || []).map((company) => ({
       ...company,
+      location: company.location || "",
       country: company.country || "Finland",
       priority: company.priority || "Medium",
       image: company.image || ""
@@ -162,7 +186,7 @@ function filteredContacts() {
 function filteredCompanies() {
   const query = state.query.trim().toLowerCase();
   return store.companies.filter((company) => {
-    const haystack = [company.name, company.country, company.segment, company.priority, company.website, company.notes]
+    const haystack = [company.name, company.location, company.country, company.segment, company.priority, company.website, company.notes]
       .join(" ")
       .toLowerCase();
     const countryMatch = state.country === "All" || company.country === state.country;
@@ -270,18 +294,14 @@ function renderHome() {
       `<button type="button" data-action="open-modal" data-modal="company">${navIcon("plus")} Add company</button>
        <button type="button" data-action="open-modal" data-modal="deal">${navIcon("sales")} Add deal</button>`
     )}
+    <section class="home-view-switch">
+      <div class="contact-tabs home-tabs">
+        <button class="${state.homeMode === "orbit" ? "active" : ""}" type="button" data-action="set-home-mode" data-mode="orbit">Orbit Map</button>
+        <button class="${state.homeMode === "world" ? "active" : ""}" type="button" data-action="set-home-mode" data-mode="world">World Map</button>
+      </div>
+    </section>
     <section class="home-system-layout">
-      <article class="relationship-system">
-        <div class="orbit-ring orbit-high"></div>
-        <div class="orbit-ring orbit-medium"></div>
-        <div class="orbit-ring orbit-low"></div>
-        <div class="system-core">
-          <img src="./assets/balai-logo.png" alt="BALAI" />
-          <span>BALAI CRM</span>
-          <strong>Relationship Center</strong>
-        </div>
-        ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
-      </article>
+      ${state.homeMode === "world" ? renderWorldMap() : renderOrbitMap()}
       <aside class="system-summary">
         ${metric("Companies", t.companies, "Company profiles")}
         ${metric("People", t.contacts, "Linked contacts")}
@@ -297,6 +317,44 @@ function renderHome() {
         </article>
       </aside>
     </section>
+  `;
+}
+
+function renderOrbitMap() {
+  return `
+    <article class="relationship-system">
+      <div class="orbit-ring orbit-high"></div>
+      <div class="orbit-ring orbit-medium"></div>
+      <div class="orbit-ring orbit-low"></div>
+      <div class="system-core">
+        <img src="./assets/balai-logo.png" alt="BALAI" />
+        <span>BALAI CRM</span>
+        <strong>Relationship Center</strong>
+      </div>
+      ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
+    </article>
+  `;
+}
+
+function renderWorldMap() {
+  return `
+    <article class="world-map-panel">
+      <div class="map-title">
+        <span>BALAI NETWORK</span>
+        <strong>Company Locations</strong>
+        <p>Company markers are positioned from their saved city or country.</p>
+      </div>
+      <div class="world-map">
+        <div class="map-grid"></div>
+        <span class="continent north-america"></span>
+        <span class="continent south-america"></span>
+        <span class="continent europe"></span>
+        <span class="continent africa"></span>
+        <span class="continent asia"></span>
+        <span class="continent australia"></span>
+        ${store.companies.length ? companyMapMarkers() : `<div class="empty-map">${emptyHint("Add company locations to populate the world map.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
+      </div>
+    </article>
   `;
 }
 
@@ -328,6 +386,34 @@ function companyPlanet(company, index, total) {
       <small>${company.priority || "Medium"} / ${contacts} people</small>
     </button>
   `;
+}
+
+function companyMapMarkers() {
+  return store.companies.map(companyMapMarker).join("");
+}
+
+function companyMapMarker(company) {
+  const point = companyCoordinates(company);
+  const location = [company.location, company.country].filter(Boolean).join(", ") || "Location not set";
+  return `
+    <button
+      class="map-marker ${priorityClass(company.priority)}"
+      type="button"
+      data-action="open-company"
+      data-id="${company.id}"
+      style="--map-x:${point.x}%; --map-y:${point.y}%;"
+      title="${escapeHtml(`${company.name || "Company"} / ${location}`)}"
+    >
+      ${companyMapVisual(company)}
+      <span>${escapeHtml(company.name || "Unnamed company")}</span>
+      <small>${escapeHtml(location)}</small>
+    </button>
+  `;
+}
+
+function companyMapVisual(company) {
+  if (company.image) return `<i><img src="${company.image}" alt="${escapeHtml(company.name || "Company")}" /></i>`;
+  return `<i>${companyInitials(company)}</i>`;
 }
 
 function renderSearch() {
@@ -554,7 +640,7 @@ function companyDetail(company) {
     </header>
     <section class="hero-contact company-hero">
       ${companyPhoto(company, "profile-photo company-photo")}
-      <p class="account-label">${company.country || "No country"} / ${company.segment || "Company"}</p>
+      <p class="account-label">${[company.location, company.country].filter(Boolean).join(", ") || "No location"} / ${company.segment || "Company"}</p>
       <h2>${escapeHtml(company.name || "Unnamed company")}</h2>
       <p>${company.website || "No website yet"}</p>
       <div class="deal-strip">
@@ -595,7 +681,7 @@ function companyInfoPanel(company) {
   const deals = store.deals.filter((deal) => deal.companyId === company.id).length;
   return `
     <header class="info-header"><span>${navIcon("info")}</span><div><h2>Company info</h2><p>${escapeHtml(company.name || "Unnamed company")}</p></div></header>
-    ${infoSection("General", [["Company Name", company.name], ["Company Type", company.segment || "-"], ["Country", company.country], ["Priority", company.priority]])}
+    ${infoSection("General", [["Company Name", company.name], ["Company Type", company.segment || "-"], ["Location", company.location || "-"], ["Country", company.country], ["Priority", company.priority]])}
     ${infoSection("Relationship", [["Linked People", people], ["Linked Deals", deals], ["Website", company.website || "-"], ["Notes", company.notes || "-"]])}
   `;
 }
@@ -649,7 +735,7 @@ function companyRow(company) {
   return `
     <button class="contact-row company-row ${state.selectedCompanyId === company.id ? "selected" : ""}" type="button" data-action="open-company" data-id="${company.id}">
       ${companyPhoto(company, "mini-avatar company-avatar")}
-      <span class="contact-copy"><strong>${escapeHtml(company.name || "Unnamed company")}</strong><small>${company.segment || "Company"} / ${company.country || "No country"}</small><small>${people} people / ${deals} deals</small></span>
+      <span class="contact-copy"><strong>${escapeHtml(company.name || "Unnamed company")}</strong><small>${company.segment || "Company"} / ${company.location || company.country || "No location"}</small><small>${people} people / ${deals} deals</small></span>
       <span class="row-meta"><span class="priority-pill ${priorityClass(company.priority)}">${company.priority || "Medium"}</span></span>
     </button>
   `;
@@ -670,7 +756,7 @@ function dealCard(deal) {
 function renderSearchItem(item) {
   const type = item.stage ? "Deal" : item.companyId ? "Contact" : "Company";
   const title = type === "Deal" ? item.title : type === "Contact" ? contactName(item.id) : item.name;
-  const detail = type === "Deal" ? `${item.stage} / ${formatMoney(item.value)}` : type === "Contact" ? `${companyName(item.companyId) || "No company"} / ${item.country}` : `${item.country} / ${item.segment || "Company"}`;
+  const detail = type === "Deal" ? `${item.stage} / ${formatMoney(item.value)}` : type === "Contact" ? `${companyName(item.companyId) || "No company"} / ${item.country}` : `${item.location || item.country} / ${item.segment || "Company"}`;
   const action = type === "Deal" ? "edit-deal" : type === "Contact" ? "open-contact" : "open-company";
   return `<article class="workspace-card result-card"><div class="card-heading"><div><h2>${title}</h2><p>${type}</p></div></div><p>${detail}</p><button type="button" data-action="${action}" data-id="${item.id}">Open</button></article>`;
 }
@@ -724,6 +810,7 @@ function companyForm() {
   const company = state.editId ? store.companies.find((item) => item.id === state.editId) : {};
   return formShell(state.editId ? "Edit company" : "Add company", "companyForm", `
     ${input("name", "Company name", company.name)}
+    ${input("location", "Location", company.location)}
     ${select("country", "Country", company.country, countries)}
     ${input("segment", "Company type", company.segment)}
     ${select("priority", "Priority", company.priority, priorities)}
@@ -820,6 +907,10 @@ function handleAction(event) {
     render();
   } else if (action === "set-contact-mode") {
     state.contactMode = el.dataset.mode;
+    state.moreOpen = false;
+    render();
+  } else if (action === "set-home-mode") {
+    state.homeMode = el.dataset.mode;
     state.moreOpen = false;
     render();
   } else if (action === "open-contact") {
@@ -927,6 +1018,7 @@ function saveCompany(event) {
     ...(existing || {}),
     id: existing?.id || makeId(),
     name: data.name.trim(),
+    location: data.location.trim(),
     country: data.country,
     segment: data.segment.trim(),
     priority: data.priority || "Medium",
@@ -1127,6 +1219,28 @@ function priorityRank(priority = "Medium") {
 
 function priorityClass(priority = "Medium") {
   return String(priority || "Medium").toLowerCase();
+}
+
+function companyCoordinates(company) {
+  const locationKey = placeKey(company.location);
+  const countryKey = placeKey(company.country);
+  const coordinates = knownPlaces[locationKey] || knownPlaces[`${locationKey}, ${countryKey}`] || knownPlaces[countryKey] || knownPlaces.finland;
+  return projectCoordinates(coordinates);
+}
+
+function projectCoordinates([lat, lng]) {
+  return {
+    x: Math.max(3, Math.min(97, ((lng + 180) / 360) * 100)),
+    y: Math.max(6, Math.min(94, ((90 - lat) / 180) * 100))
+  };
+}
+
+function placeKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
 function companyOrbitRadius(priority = "Medium") {

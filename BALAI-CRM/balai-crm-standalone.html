@@ -938,6 +938,15 @@ h1 {
   padding: 22px 30px 0;
 }
 
+.home-view-switch {
+  padding: 22px 30px 0;
+}
+
+.home-tabs {
+  width: min(420px, 100%);
+  padding: 0;
+}
+
 .home-system-layout {
   display: grid;
   grid-template-columns: minmax(520px, 1fr) minmax(260px, 360px);
@@ -1164,6 +1173,236 @@ h1 {
   display: grid;
   align-content: start;
   gap: 16px;
+}
+
+.world-map-panel {
+  position: relative;
+  min-height: 660px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 78% 20%, rgba(185, 133, 58, 0.12), transparent 18rem),
+    linear-gradient(135deg, #fffdf8, #f4efe5);
+  box-shadow: 0 24px 70px rgba(8, 38, 75, 0.1);
+}
+
+.map-title {
+  position: absolute;
+  top: 26px;
+  left: 30px;
+  z-index: 5;
+  width: min(330px, calc(100% - 60px));
+  pointer-events: none;
+}
+
+.map-title span {
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.map-title strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1;
+}
+
+.map-title p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.world-map {
+  position: absolute;
+  inset: 92px 34px 34px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 216, 201, 0.86);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(8, 38, 75, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8, 38, 75, 0.055) 1px, transparent 1px),
+    radial-gradient(circle at 50% 55%, rgba(255, 253, 248, 0.95), rgba(244, 239, 229, 0.78));
+  background-size: 100% 20%, 12.5% 100%, auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 253, 248, 0.78);
+}
+
+.map-grid {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, transparent 0 36%, rgba(8, 38, 75, 0.05) 36.2%, transparent 36.6%),
+    radial-gradient(circle at center, transparent 0 20%, rgba(185, 133, 58, 0.06) 20.2%, transparent 20.6%);
+  pointer-events: none;
+}
+
+.continent {
+  position: absolute;
+  display: block;
+  border: 1px solid rgba(185, 133, 58, 0.16);
+  background: rgba(185, 133, 58, 0.1);
+  filter: blur(0.2px);
+  pointer-events: none;
+}
+
+.north-america {
+  left: 9%;
+  top: 21%;
+  width: 22%;
+  height: 20%;
+  border-radius: 58% 42% 48% 52%;
+  transform: rotate(-12deg);
+}
+
+.south-america {
+  left: 28%;
+  top: 52%;
+  width: 10%;
+  height: 28%;
+  border-radius: 50% 48% 60% 42%;
+  transform: rotate(18deg);
+}
+
+.europe {
+  left: 48%;
+  top: 27%;
+  width: 11%;
+  height: 12%;
+  border-radius: 48% 52% 40% 56%;
+}
+
+.africa {
+  left: 50%;
+  top: 43%;
+  width: 14%;
+  height: 25%;
+  border-radius: 44% 52% 58% 48%;
+  transform: rotate(-5deg);
+}
+
+.asia {
+  left: 60%;
+  top: 30%;
+  width: 26%;
+  height: 24%;
+  border-radius: 52% 48% 44% 56%;
+  transform: rotate(6deg);
+}
+
+.australia {
+  left: 76%;
+  top: 68%;
+  width: 10%;
+  height: 8%;
+  border-radius: 56% 44% 48% 52%;
+  transform: rotate(8deg);
+}
+
+.map-marker {
+  position: absolute;
+  left: var(--map-x);
+  top: var(--map-y);
+  z-index: 6;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 94px;
+  border: 0;
+  color: var(--navy);
+  background: transparent;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.map-marker i {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 253, 248, 0.96);
+  border-radius: 50%;
+  color: #fffaf1;
+  background: linear-gradient(135deg, var(--navy), var(--gold));
+  box-shadow:
+    0 12px 28px rgba(8, 38, 75, 0.2),
+    0 0 0 1px rgba(185, 133, 58, 0.2);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.map-marker img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-marker span {
+  max-width: 130px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 216, 201, 0.82);
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 8px 20px rgba(8, 38, 75, 0.08);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.map-marker small {
+  max-width: 130px;
+  overflow: hidden;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.map-marker.high i {
+  width: 54px;
+  height: 54px;
+  box-shadow:
+    0 16px 34px rgba(8, 38, 75, 0.24),
+    0 0 0 1px rgba(185, 133, 58, 0.38);
+}
+
+.map-marker:hover i {
+  box-shadow:
+    0 18px 42px rgba(8, 38, 75, 0.28),
+    0 0 0 1px rgba(185, 133, 58, 0.52);
+}
+
+.empty-map {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  z-index: 7;
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  width: min(320px, calc(100% - 40px));
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.empty-map button {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 14px;
+  color: var(--navy);
+  background: #fffdf8;
+  font-weight: 800;
 }
 
 .metrics-grid {
@@ -1813,6 +2052,15 @@ h1 {
     min-height: 620px;
   }
 
+  .world-map-panel {
+    min-width: 640px;
+    min-height: 620px;
+  }
+
+  .world-map {
+    inset: 94px 24px 24px;
+  }
+
   .system-summary {
     grid-template-columns: 1fr;
   }
@@ -1857,6 +2105,28 @@ const services = [
 ];
 const dealStages = ["New lead", "Qualified", "Proposal sent", "Follow-up", "Client", "Lost"];
 const priorities = ["High", "Medium", "Low"];
+const knownPlaces = {
+  finland: [64.9, 26.0],
+  rovaniemi: [66.5, 25.73],
+  helsinki: [60.17, 24.94],
+  oulu: [65.01, 25.47],
+  tampere: [61.5, 23.76],
+  turku: [60.45, 22.27],
+  sweden: [62.0, 15.0],
+  stockholm: [59.33, 18.07],
+  norway: [61.0, 8.0],
+  oslo: [59.91, 10.75],
+  indonesia: [-2.5, 118.0],
+  jakarta: [-6.2, 106.82],
+  bali: [-8.34, 115.09],
+  denpasar: [-8.65, 115.22],
+  malaysia: [4.21, 101.98],
+  "kuala lumpur": [3.14, 101.69],
+  philippines: [12.88, 121.77],
+  manila: [14.6, 120.98],
+  cebu: [10.32, 123.9],
+  singapore: [1.35, 103.82]
+};
 
 const navItems = [
   ["Search", "search"],
@@ -1880,6 +2150,7 @@ const state = {
   selectedCompanyId: "",
   selectedDealId: "",
   contactMode: "people",
+  homeMode: "orbit",
   modal: null,
   editId: null,
   prefillService: "",
@@ -1926,6 +2197,7 @@ function normalizeStore(next) {
     })),
     companies: (next.companies || []).map((company) => ({
       ...company,
+      location: company.location || "",
       country: company.country || "Finland",
       priority: company.priority || "Medium",
       image: company.image || ""
@@ -2007,7 +2279,7 @@ function filteredContacts() {
 function filteredCompanies() {
   const query = state.query.trim().toLowerCase();
   return store.companies.filter((company) => {
-    const haystack = [company.name, company.country, company.segment, company.priority, company.website, company.notes]
+    const haystack = [company.name, company.location, company.country, company.segment, company.priority, company.website, company.notes]
       .join(" ")
       .toLowerCase();
     const countryMatch = state.country === "All" || company.country === state.country;
@@ -2115,18 +2387,14 @@ function renderHome() {
       `<button type="button" data-action="open-modal" data-modal="company">${navIcon("plus")} Add company</button>
        <button type="button" data-action="open-modal" data-modal="deal">${navIcon("sales")} Add deal</button>`
     )}
+    <section class="home-view-switch">
+      <div class="contact-tabs home-tabs">
+        <button class="${state.homeMode === "orbit" ? "active" : ""}" type="button" data-action="set-home-mode" data-mode="orbit">Orbit Map</button>
+        <button class="${state.homeMode === "world" ? "active" : ""}" type="button" data-action="set-home-mode" data-mode="world">World Map</button>
+      </div>
+    </section>
     <section class="home-system-layout">
-      <article class="relationship-system">
-        <div class="orbit-ring orbit-high"></div>
-        <div class="orbit-ring orbit-medium"></div>
-        <div class="orbit-ring orbit-low"></div>
-        <div class="system-core">
-          <img src="./assets/balai-logo.png" alt="BALAI" />
-          <span>BALAI CRM</span>
-          <strong>Relationship Center</strong>
-        </div>
-        ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
-      </article>
+      ${state.homeMode === "world" ? renderWorldMap() : renderOrbitMap()}
       <aside class="system-summary">
         ${metric("Companies", t.companies, "Company profiles")}
         ${metric("People", t.contacts, "Linked contacts")}
@@ -2142,6 +2410,44 @@ function renderHome() {
         </article>
       </aside>
     </section>
+  `;
+}
+
+function renderOrbitMap() {
+  return `
+    <article class="relationship-system">
+      <div class="orbit-ring orbit-high"></div>
+      <div class="orbit-ring orbit-medium"></div>
+      <div class="orbit-ring orbit-low"></div>
+      <div class="system-core">
+        <img src="./assets/balai-logo.png" alt="BALAI" />
+        <span>BALAI CRM</span>
+        <strong>Relationship Center</strong>
+      </div>
+      ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
+    </article>
+  `;
+}
+
+function renderWorldMap() {
+  return `
+    <article class="world-map-panel">
+      <div class="map-title">
+        <span>BALAI NETWORK</span>
+        <strong>Company Locations</strong>
+        <p>Company markers are positioned from their saved city or country.</p>
+      </div>
+      <div class="world-map">
+        <div class="map-grid"></div>
+        <span class="continent north-america"></span>
+        <span class="continent south-america"></span>
+        <span class="continent europe"></span>
+        <span class="continent africa"></span>
+        <span class="continent asia"></span>
+        <span class="continent australia"></span>
+        ${store.companies.length ? companyMapMarkers() : `<div class="empty-map">${emptyHint("Add company locations to populate the world map.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
+      </div>
+    </article>
   `;
 }
 
@@ -2173,6 +2479,34 @@ function companyPlanet(company, index, total) {
       <small>${company.priority || "Medium"} / ${contacts} people</small>
     </button>
   `;
+}
+
+function companyMapMarkers() {
+  return store.companies.map(companyMapMarker).join("");
+}
+
+function companyMapMarker(company) {
+  const point = companyCoordinates(company);
+  const location = [company.location, company.country].filter(Boolean).join(", ") || "Location not set";
+  return `
+    <button
+      class="map-marker ${priorityClass(company.priority)}"
+      type="button"
+      data-action="open-company"
+      data-id="${company.id}"
+      style="--map-x:${point.x}%; --map-y:${point.y}%;"
+      title="${escapeHtml(`${company.name || "Company"} / ${location}`)}"
+    >
+      ${companyMapVisual(company)}
+      <span>${escapeHtml(company.name || "Unnamed company")}</span>
+      <small>${escapeHtml(location)}</small>
+    </button>
+  `;
+}
+
+function companyMapVisual(company) {
+  if (company.image) return `<i><img src="${company.image}" alt="${escapeHtml(company.name || "Company")}" /></i>`;
+  return `<i>${companyInitials(company)}</i>`;
 }
 
 function renderSearch() {
@@ -2399,7 +2733,7 @@ function companyDetail(company) {
     </header>
     <section class="hero-contact company-hero">
       ${companyPhoto(company, "profile-photo company-photo")}
-      <p class="account-label">${company.country || "No country"} / ${company.segment || "Company"}</p>
+      <p class="account-label">${[company.location, company.country].filter(Boolean).join(", ") || "No location"} / ${company.segment || "Company"}</p>
       <h2>${escapeHtml(company.name || "Unnamed company")}</h2>
       <p>${company.website || "No website yet"}</p>
       <div class="deal-strip">
@@ -2440,7 +2774,7 @@ function companyInfoPanel(company) {
   const deals = store.deals.filter((deal) => deal.companyId === company.id).length;
   return `
     <header class="info-header"><span>${navIcon("info")}</span><div><h2>Company info</h2><p>${escapeHtml(company.name || "Unnamed company")}</p></div></header>
-    ${infoSection("General", [["Company Name", company.name], ["Company Type", company.segment || "-"], ["Country", company.country], ["Priority", company.priority]])}
+    ${infoSection("General", [["Company Name", company.name], ["Company Type", company.segment || "-"], ["Location", company.location || "-"], ["Country", company.country], ["Priority", company.priority]])}
     ${infoSection("Relationship", [["Linked People", people], ["Linked Deals", deals], ["Website", company.website || "-"], ["Notes", company.notes || "-"]])}
   `;
 }
@@ -2494,7 +2828,7 @@ function companyRow(company) {
   return `
     <button class="contact-row company-row ${state.selectedCompanyId === company.id ? "selected" : ""}" type="button" data-action="open-company" data-id="${company.id}">
       ${companyPhoto(company, "mini-avatar company-avatar")}
-      <span class="contact-copy"><strong>${escapeHtml(company.name || "Unnamed company")}</strong><small>${company.segment || "Company"} / ${company.country || "No country"}</small><small>${people} people / ${deals} deals</small></span>
+      <span class="contact-copy"><strong>${escapeHtml(company.name || "Unnamed company")}</strong><small>${company.segment || "Company"} / ${company.location || company.country || "No location"}</small><small>${people} people / ${deals} deals</small></span>
       <span class="row-meta"><span class="priority-pill ${priorityClass(company.priority)}">${company.priority || "Medium"}</span></span>
     </button>
   `;
@@ -2515,7 +2849,7 @@ function dealCard(deal) {
 function renderSearchItem(item) {
   const type = item.stage ? "Deal" : item.companyId ? "Contact" : "Company";
   const title = type === "Deal" ? item.title : type === "Contact" ? contactName(item.id) : item.name;
-  const detail = type === "Deal" ? `${item.stage} / ${formatMoney(item.value)}` : type === "Contact" ? `${companyName(item.companyId) || "No company"} / ${item.country}` : `${item.country} / ${item.segment || "Company"}`;
+  const detail = type === "Deal" ? `${item.stage} / ${formatMoney(item.value)}` : type === "Contact" ? `${companyName(item.companyId) || "No company"} / ${item.country}` : `${item.location || item.country} / ${item.segment || "Company"}`;
   const action = type === "Deal" ? "edit-deal" : type === "Contact" ? "open-contact" : "open-company";
   return `<article class="workspace-card result-card"><div class="card-heading"><div><h2>${title}</h2><p>${type}</p></div></div><p>${detail}</p><button type="button" data-action="${action}" data-id="${item.id}">Open</button></article>`;
 }
@@ -2569,6 +2903,7 @@ function companyForm() {
   const company = state.editId ? store.companies.find((item) => item.id === state.editId) : {};
   return formShell(state.editId ? "Edit company" : "Add company", "companyForm", `
     ${input("name", "Company name", company.name)}
+    ${input("location", "Location", company.location)}
     ${select("country", "Country", company.country, countries)}
     ${input("segment", "Company type", company.segment)}
     ${select("priority", "Priority", company.priority, priorities)}
@@ -2665,6 +3000,10 @@ function handleAction(event) {
     render();
   } else if (action === "set-contact-mode") {
     state.contactMode = el.dataset.mode;
+    state.moreOpen = false;
+    render();
+  } else if (action === "set-home-mode") {
+    state.homeMode = el.dataset.mode;
     state.moreOpen = false;
     render();
   } else if (action === "open-contact") {
@@ -2772,6 +3111,7 @@ function saveCompany(event) {
     ...(existing || {}),
     id: existing?.id || makeId(),
     name: data.name.trim(),
+    location: data.location.trim(),
     country: data.country,
     segment: data.segment.trim(),
     priority: data.priority || "Medium",
@@ -2972,6 +3312,28 @@ function priorityRank(priority = "Medium") {
 
 function priorityClass(priority = "Medium") {
   return String(priority || "Medium").toLowerCase();
+}
+
+function companyCoordinates(company) {
+  const locationKey = placeKey(company.location);
+  const countryKey = placeKey(company.country);
+  const coordinates = knownPlaces[locationKey] || knownPlaces[`${locationKey}, ${countryKey}`] || knownPlaces[countryKey] || knownPlaces.finland;
+  return projectCoordinates(coordinates);
+}
+
+function projectCoordinates([lat, lng]) {
+  return {
+    x: Math.max(3, Math.min(97, ((lng + 180) / 360) * 100)),
+    y: Math.max(6, Math.min(94, ((90 - lat) / 180) * 100))
+  };
+}
+
+function placeKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
 function companyOrbitRadius(priority = "Medium") {
