@@ -346,15 +346,33 @@ function renderWorldMap() {
       </div>
       <div class="world-map">
         <div class="map-grid"></div>
-        <span class="continent north-america"></span>
-        <span class="continent south-america"></span>
-        <span class="continent europe"></span>
-        <span class="continent africa"></span>
-        <span class="continent asia"></span>
-        <span class="continent australia"></span>
+        ${worldMapSvg()}
         ${store.companies.length ? companyMapMarkers() : `<div class="empty-map">${emptyHint("Add company locations to populate the world map.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
       </div>
     </article>
+  `;
+}
+
+function worldMapSvg() {
+  return `
+    <svg class="world-map-art" viewBox="0 0 1000 500" aria-hidden="true" focusable="false">
+      <path class="land main-land" d="M74 132 L111 94 L168 82 L221 95 L267 128 L288 171 L263 202 L224 200 L201 226 L171 214 L153 242 L123 222 L97 188 L66 169 Z" />
+      <path class="land main-land" d="M203 226 L243 238 L270 269 L258 312 L286 351 L271 408 L240 466 L214 420 L197 365 L174 330 L184 276 Z" />
+      <path class="land main-land" d="M415 150 L455 128 L510 136 L530 166 L501 188 L459 180 L430 194 L398 176 Z" />
+      <path class="land main-land" d="M485 197 L535 185 L586 214 L620 272 L596 351 L548 425 L503 382 L475 304 L445 258 Z" />
+      <path class="land main-land" d="M546 137 L624 101 L722 104 L825 130 L902 180 L877 226 L784 220 L724 252 L660 230 L612 252 L566 210 Z" />
+      <path class="land main-land" d="M742 330 L808 314 L865 346 L852 389 L783 401 L730 374 Z" />
+      <path class="land main-land" d="M330 64 L390 38 L450 58 L438 102 L370 111 L322 96 Z" />
+      <path class="land island-land" d="M864 407 L908 415 L931 442 L896 455 L850 438 Z" />
+      <path class="land island-land" d="M767 250 L798 260 L781 283 L748 275 Z" />
+      <path class="land island-land" d="M809 273 L849 282 L877 306 L839 315 L801 298 Z" />
+      <path class="land island-land" d="M832 228 L857 235 L854 260 L827 253 Z" />
+      <path class="land island-land" d="M878 139 L903 164 L898 199 L870 178 Z" />
+      <path class="land island-land" d="M464 112 L486 101 L506 116 L490 130 Z" />
+      <path class="land island-land" d="M515 120 L535 112 L548 128 L526 138 Z" />
+      <path class="land island-land" d="M276 193 L315 201 L331 225 L296 236 L263 218 Z" />
+      <path class="land island-land" d="M42 101 L70 80 L104 86 L91 115 L58 121 Z" />
+    </svg>
   `;
 }
 

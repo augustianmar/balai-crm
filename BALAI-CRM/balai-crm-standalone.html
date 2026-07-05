@@ -1227,7 +1227,7 @@ h1 {
   background:
     linear-gradient(rgba(8, 38, 75, 0.055) 1px, transparent 1px),
     linear-gradient(90deg, rgba(8, 38, 75, 0.055) 1px, transparent 1px),
-    radial-gradient(circle at 50% 55%, rgba(255, 253, 248, 0.95), rgba(244, 239, 229, 0.78));
+    radial-gradient(circle at 50% 55%, rgba(255, 253, 248, 0.96), rgba(236, 227, 212, 0.82));
   background-size: 100% 20%, 12.5% 100%, auto;
   box-shadow: inset 0 0 0 1px rgba(255, 253, 248, 0.78);
 }
@@ -1241,66 +1241,30 @@ h1 {
   pointer-events: none;
 }
 
-.continent {
+.world-map-art {
   position: absolute;
-  display: block;
-  border: 1px solid rgba(185, 133, 58, 0.16);
-  background: rgba(185, 133, 58, 0.1);
-  filter: blur(0.2px);
+  inset: 5% 4% 6%;
+  z-index: 2;
+  width: 92%;
+  height: 89%;
+  filter: drop-shadow(0 14px 28px rgba(8, 38, 75, 0.08));
   pointer-events: none;
 }
 
-.north-america {
-  left: 9%;
-  top: 21%;
-  width: 22%;
-  height: 20%;
-  border-radius: 58% 42% 48% 52%;
-  transform: rotate(-12deg);
+.land {
+  fill: rgba(185, 133, 58, 0.16);
+  stroke: rgba(8, 38, 75, 0.2);
+  stroke-linejoin: round;
+  stroke-width: 1.4;
 }
 
-.south-america {
-  left: 28%;
-  top: 52%;
-  width: 10%;
-  height: 28%;
-  border-radius: 50% 48% 60% 42%;
-  transform: rotate(18deg);
+.main-land {
+  fill: rgba(185, 133, 58, 0.17);
 }
 
-.europe {
-  left: 48%;
-  top: 27%;
-  width: 11%;
-  height: 12%;
-  border-radius: 48% 52% 40% 56%;
-}
-
-.africa {
-  left: 50%;
-  top: 43%;
-  width: 14%;
-  height: 25%;
-  border-radius: 44% 52% 58% 48%;
-  transform: rotate(-5deg);
-}
-
-.asia {
-  left: 60%;
-  top: 30%;
-  width: 26%;
-  height: 24%;
-  border-radius: 52% 48% 44% 56%;
-  transform: rotate(6deg);
-}
-
-.australia {
-  left: 76%;
-  top: 68%;
-  width: 10%;
-  height: 8%;
-  border-radius: 56% 44% 48% 52%;
-  transform: rotate(8deg);
+.island-land {
+  fill: rgba(185, 133, 58, 0.21);
+  stroke-width: 1.1;
 }
 
 .map-marker {
@@ -2439,15 +2403,33 @@ function renderWorldMap() {
       </div>
       <div class="world-map">
         <div class="map-grid"></div>
-        <span class="continent north-america"></span>
-        <span class="continent south-america"></span>
-        <span class="continent europe"></span>
-        <span class="continent africa"></span>
-        <span class="continent asia"></span>
-        <span class="continent australia"></span>
+        ${worldMapSvg()}
         ${store.companies.length ? companyMapMarkers() : `<div class="empty-map">${emptyHint("Add company locations to populate the world map.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
       </div>
     </article>
+  `;
+}
+
+function worldMapSvg() {
+  return `
+    <svg class="world-map-art" viewBox="0 0 1000 500" aria-hidden="true" focusable="false">
+      <path class="land main-land" d="M74 132 L111 94 L168 82 L221 95 L267 128 L288 171 L263 202 L224 200 L201 226 L171 214 L153 242 L123 222 L97 188 L66 169 Z" />
+      <path class="land main-land" d="M203 226 L243 238 L270 269 L258 312 L286 351 L271 408 L240 466 L214 420 L197 365 L174 330 L184 276 Z" />
+      <path class="land main-land" d="M415 150 L455 128 L510 136 L530 166 L501 188 L459 180 L430 194 L398 176 Z" />
+      <path class="land main-land" d="M485 197 L535 185 L586 214 L620 272 L596 351 L548 425 L503 382 L475 304 L445 258 Z" />
+      <path class="land main-land" d="M546 137 L624 101 L722 104 L825 130 L902 180 L877 226 L784 220 L724 252 L660 230 L612 252 L566 210 Z" />
+      <path class="land main-land" d="M742 330 L808 314 L865 346 L852 389 L783 401 L730 374 Z" />
+      <path class="land main-land" d="M330 64 L390 38 L450 58 L438 102 L370 111 L322 96 Z" />
+      <path class="land island-land" d="M864 407 L908 415 L931 442 L896 455 L850 438 Z" />
+      <path class="land island-land" d="M767 250 L798 260 L781 283 L748 275 Z" />
+      <path class="land island-land" d="M809 273 L849 282 L877 306 L839 315 L801 298 Z" />
+      <path class="land island-land" d="M832 228 L857 235 L854 260 L827 253 Z" />
+      <path class="land island-land" d="M878 139 L903 164 L898 199 L870 178 Z" />
+      <path class="land island-land" d="M464 112 L486 101 L506 116 L490 130 Z" />
+      <path class="land island-land" d="M515 120 L535 112 L548 128 L526 138 Z" />
+      <path class="land island-land" d="M276 193 L315 201 L331 225 L296 236 L263 218 Z" />
+      <path class="land island-land" d="M42 101 L70 80 L104 86 L91 115 L58 121 Z" />
+    </svg>
   `;
 }
 
