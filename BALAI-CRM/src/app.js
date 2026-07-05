@@ -23,15 +23,29 @@ const knownPlaces = {
   stockholm: [59.33, 18.07],
   norway: [61.0, 8.0],
   oslo: [59.91, 10.75],
+  bergen: [60.39, 5.32],
+  tromso: [69.65, 18.96],
+  trondheim: [63.43, 10.4],
+  gothenburg: [57.71, 11.97],
+  malmo: [55.6, 13.0],
   indonesia: [-2.5, 118.0],
   jakarta: [-6.2, 106.82],
   bali: [-8.34, 115.09],
   denpasar: [-8.65, 115.22],
+  bandung: [-6.92, 107.62],
+  surabaya: [-7.26, 112.75],
+  yogyakarta: [-7.8, 110.37],
   malaysia: [4.21, 101.98],
   "kuala lumpur": [3.14, 101.69],
+  penang: [5.41, 100.33],
+  kuching: [1.55, 110.36],
+  "kota kinabalu": [5.98, 116.07],
   philippines: [12.88, 121.77],
   manila: [14.6, 120.98],
   cebu: [10.32, 123.9],
+  davao: [7.07, 125.61],
+  "el nido": [11.2, 119.42],
+  palawan: [9.83, 118.74],
   singapore: [1.35, 103.82]
 };
 
@@ -66,6 +80,8 @@ const state = {
   prefillCompanyId: "",
   pictureTarget: "",
   moreOpen: false,
+  mapMenuOpen: false,
+  mapEditMode: false,
   notice: ""
 };
 
@@ -109,7 +125,8 @@ function normalizeStore(next) {
       location: company.location || "",
       country: company.country || "Finland",
       priority: company.priority || "Medium",
-      image: company.image || ""
+      image: company.image || "",
+      mapPosition: normalizeMapPosition(company.mapPosition)
     })),
     deals: next.deals || [],
     tasks: next.tasks || [],
@@ -345,14 +362,23 @@ function renderOrbitMap() {
 
 function renderWorldMap() {
   return `
-    <article class="world-map-panel">
+    <article class="world-map-panel ${state.mapEditMode ? "is-editing" : ""}">
       <div class="map-title">
         <span>BALAI HOME</span>
         <strong>World Map</strong>
-        <p>Companies are placed by saved city/town and country. Add Location to refine marker placement.</p>
+        <p>Shows company locations across the globe. Use the map menu to fine-tune saved marker positions.</p>
       </div>
-      <div class="world-map">
-        <div class="map-grid"></div>
+      <div class="map-tools">
+        <button class="map-tool-toggle" type="button" data-action="toggle-map-menu" aria-label="World map options">...</button>
+        ${state.mapMenuOpen ? `
+          <div class="map-tool-menu">
+            <button type="button" data-action="toggle-map-edit">${state.mapEditMode ? "Done placing markers" : "Edit marker positions"}</button>
+            <button type="button" data-action="reset-map-positions">Reset marker positions</button>
+          </div>
+        ` : ""}
+      </div>
+      ${state.mapEditMode ? `<p class="map-edit-hint">Drag a company bubble to its correct place. Release to save.</p>` : ""}
+      <div class="world-map ${state.mapEditMode ? "editing" : ""}">
         ${worldMapSvg()}
         ${store.companies.length ? companyMapMarkers() : `<div class="empty-map">${emptyHint("Add company locations to populate the world map.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
       </div>
@@ -407,7 +433,7 @@ function companyMapMarker(company) {
   const location = [company.location, company.country].filter(Boolean).join(", ") || "Location not set";
   return `
     <button
-      class="map-marker ${priorityClass(company.priority)}"
+      class="map-marker ${priorityClass(company.priority)} ${company.mapPosition ? "manual-position" : ""}"
       type="button"
       data-action="open-company"
       data-id="${company.id}"
@@ -875,6 +901,7 @@ function select(name, label, value = "", options = []) {
 
 function bindEvents() {
   document.querySelectorAll("[data-action]").forEach((element) => element.addEventListener("click", handleAction));
+  document.querySelectorAll(".map-marker").forEach((marker) => marker.addEventListener("pointerdown", startMapMarkerDrag));
   document.querySelectorAll("#searchInput,#pageSearchInput").forEach((inputEl) => {
     inputEl.addEventListener("input", (event) => {
       state.query = event.target.value;
@@ -892,9 +919,14 @@ function bindEvents() {
 function handleAction(event) {
   const el = event.currentTarget;
   const action = el.dataset.action;
+  if (action === "open-company" && state.mapEditMode && el.classList.contains("map-marker")) {
+    event.preventDefault();
+    return;
+  }
   if (action === "nav") {
     state.view = el.dataset.view;
     state.moreOpen = false;
+    state.mapMenuOpen = false;
     render();
   } else if (action === "open-modal") {
     state.modal = el.dataset.modal;
@@ -922,7 +954,19 @@ function handleAction(event) {
   } else if (action === "set-home-mode") {
     state.homeMode = el.dataset.mode;
     state.moreOpen = false;
+    state.mapMenuOpen = false;
     render();
+  } else if (action === "toggle-map-menu") {
+    state.mapMenuOpen = !state.mapMenuOpen;
+    render();
+  } else if (action === "toggle-map-edit") {
+    state.mapEditMode = !state.mapEditMode;
+    state.mapMenuOpen = false;
+    render();
+  } else if (action === "reset-map-positions") {
+    store.companies = store.companies.map(({ mapPosition, ...company }) => company);
+    state.mapMenuOpen = false;
+    persist("Map positions reset");
   } else if (action === "open-contact") {
     state.selectedContactId = el.dataset.id;
     state.contactMode = "people";
@@ -933,6 +977,7 @@ function handleAction(event) {
     state.contactMode = "companies";
     state.view = "contacts";
     state.moreOpen = false;
+    state.mapMenuOpen = false;
     render();
   } else if (action === "toggle-more") {
     state.moreOpen = !state.moreOpen;
@@ -990,6 +1035,35 @@ function handleAction(event) {
   } else if (action === "help") {
     flash("Start with Companies, then Contacts, then Deals.");
   }
+}
+
+function startMapMarkerDrag(event) {
+  if (!state.mapEditMode) return;
+  const marker = event.currentTarget;
+  const map = marker.closest(".world-map");
+  const id = marker.dataset.id;
+  if (!map || !id) return;
+
+  event.preventDefault();
+  marker.classList.add("is-dragging");
+
+  const moveMarker = (pointerEvent) => {
+    const point = mapPointFromEvent(pointerEvent, map);
+    marker.style.setProperty("--map-x", `${point.x}%`);
+    marker.style.setProperty("--map-y", `${point.y}%`);
+  };
+
+  const stopDragging = (pointerEvent) => {
+    window.removeEventListener("pointermove", moveMarker);
+    window.removeEventListener("pointerup", stopDragging);
+    marker.classList.remove("is-dragging");
+    const point = mapPointFromEvent(pointerEvent, map);
+    updateCompany(id, { mapPosition: point }, "Map position saved");
+  };
+
+  moveMarker(event);
+  window.addEventListener("pointermove", moveMarker);
+  window.addEventListener("pointerup", stopDragging, { once: true });
 }
 
 function saveContact(event) {
@@ -1232,6 +1306,8 @@ function priorityClass(priority = "Medium") {
 }
 
 function companyCoordinates(company) {
+  const manual = normalizeMapPosition(company.mapPosition);
+  if (manual) return manual;
   const locationKey = placeKey(company.location);
   const countryKey = placeKey(company.country);
   const coordinates = knownPlaces[locationKey] || knownPlaces[`${locationKey}, ${countryKey}`] || knownPlaces[countryKey] || knownPlaces.finland;
@@ -1239,10 +1315,27 @@ function companyCoordinates(company) {
 }
 
 function projectCoordinates([lat, lng]) {
+  return cleanMapPoint(((lng + 180) / 360) * 100, ((90 - lat) / 180) * 100);
+}
+
+function mapPointFromEvent(event, map) {
+  const rect = map.getBoundingClientRect();
+  return cleanMapPoint(((event.clientX - rect.left) / rect.width) * 100, ((event.clientY - rect.top) / rect.height) * 100);
+}
+
+function cleanMapPoint(x, y) {
   return {
-    x: Math.max(3, Math.min(97, ((lng + 180) / 360) * 100)),
-    y: Math.max(6, Math.min(94, ((90 - lat) / 180) * 100))
+    x: Math.round(Math.max(1.5, Math.min(98.5, Number(x))) * 10) / 10,
+    y: Math.round(Math.max(3, Math.min(97, Number(y))) * 10) / 10
   };
+}
+
+function normalizeMapPosition(value) {
+  if (!value || typeof value !== "object") return null;
+  const x = Number(value.x);
+  const y = Number(value.y);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+  return cleanMapPoint(x, y);
 }
 
 function placeKey(value) {
