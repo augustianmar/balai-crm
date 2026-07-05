@@ -983,12 +983,13 @@ h1 {
   position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 3;
+  z-index: 5;
   display: grid;
   justify-items: center;
-  width: 170px;
-  min-height: 170px;
-  padding: 18px;
+  align-items: center;
+  width: 96px;
+  height: 96px;
+  padding: 12px;
   border: 1px solid rgba(185, 133, 58, 0.36);
   border-radius: 50%;
   background:
@@ -997,33 +998,27 @@ h1 {
     0 24px 60px rgba(8, 38, 75, 0.14),
     inset 0 0 0 8px rgba(185, 133, 58, 0.06);
   transform: translate(-50%, -50%);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .system-core img {
-  width: 82px;
-  height: 82px;
+  width: 76px;
+  height: 76px;
   object-fit: contain;
 }
 
-.system-core span {
-  color: var(--gold);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-}
-
-.system-core strong {
-  color: var(--navy);
-  font-family: var(--font-display);
-  font-size: 22px;
-  line-height: 1;
-  text-align: center;
+.system-core:hover {
+  z-index: 22;
+  box-shadow:
+    0 30px 72px rgba(8, 38, 75, 0.18),
+    inset 0 0 0 8px rgba(185, 133, 58, 0.08);
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
 .company-planet {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: var(--orbit-top);
+  left: var(--orbit-left);
   z-index: 4;
   display: grid;
   justify-items: center;
@@ -1039,8 +1034,13 @@ h1 {
     0 14px 36px rgba(8, 38, 75, 0.12),
     inset 0 0 0 5px rgba(255, 253, 248, 0.68);
   text-align: center;
-  transform: translate(calc(-50% + var(--planet-x)), calc(-50% + var(--planet-y)));
-  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+  transform: translate(-50%, -50%);
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease,
+    min-height 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .company-planet.high {
@@ -1057,34 +1057,52 @@ h1 {
 }
 
 .company-planet:hover {
+  z-index: 24;
+  width: var(--planet-expanded);
+  min-height: var(--planet-expanded);
   border-color: var(--gold);
   box-shadow:
     0 22px 54px rgba(8, 38, 75, 0.2),
     inset 0 0 0 5px rgba(255, 253, 248, 0.76);
-  transform: translate(calc(-50% + var(--planet-x)), calc(-53% + var(--planet-y)));
+  filter: drop-shadow(0 20px 28px rgba(8, 38, 75, 0.16));
 }
 
-.company-planet span {
+.relationship-system.is-editing .company-planet {
+  cursor: grab;
+}
+
+.company-planet.is-dragging {
+  z-index: 30;
+  width: var(--planet-expanded);
+  min-height: var(--planet-expanded);
+  cursor: grabbing;
+  filter: drop-shadow(0 22px 30px rgba(8, 38, 75, 0.18));
+}
+
+.company-planet > span {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  margin-bottom: 3px;
+  width: calc(var(--planet-size) - 8px);
+  height: calc(var(--planet-size) - 8px);
+  margin: 0;
   border-radius: 50%;
   color: #fffaf1;
   background: linear-gradient(135deg, var(--navy), var(--gold));
   font-family: var(--font-display);
+  font-size: 9px;
   font-weight: 700;
+  transition: height 0.2s ease, width 0.2s ease, font-size 0.2s ease;
 }
 
 .company-planet .planet-image {
   overflow: hidden;
-  width: calc(var(--planet-size) - 22px);
-  height: calc(var(--planet-size) - 22px);
+  width: calc(var(--planet-size) - 8px);
+  height: calc(var(--planet-size) - 8px);
   margin: 0;
-  border: 2px solid rgba(255, 253, 248, 0.9);
+  border: 1px solid rgba(255, 253, 248, 0.96);
   background: #efe8db;
   box-shadow: 0 8px 18px rgba(8, 38, 75, 0.12);
+  transition: height 0.2s ease, width 0.2s ease;
 }
 
 .company-planet .planet-image img {
@@ -1093,38 +1111,66 @@ h1 {
   object-fit: cover;
 }
 
-.company-planet .planet-image + strong {
+.company-planet:hover > span,
+.company-planet:focus-visible > span,
+.company-planet.is-dragging > span,
+.company-planet:hover .planet-image,
+.company-planet:focus-visible .planet-image,
+.company-planet.is-dragging .planet-image {
+  width: calc(var(--planet-expanded) - 26px);
+  height: calc(var(--planet-expanded) - 26px);
+  font-size: 17px;
+}
+
+.company-planet strong {
   position: absolute;
-  bottom: -24px;
+  top: calc(100% + 7px);
+  left: 50%;
   max-width: 150px;
+  overflow: hidden;
   border: 1px solid rgba(226, 216, 201, 0.82);
   border-radius: 999px;
   padding: 4px 9px;
   background: rgba(255, 253, 248, 0.92);
   box-shadow: 0 8px 20px rgba(8, 38, 75, 0.08);
-}
-
-.company-planet .planet-image ~ small {
-  display: none;
-}
-
-.company-planet strong,
-.company-planet small {
-  display: block;
-  max-width: 112px;
-  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.company-planet strong {
   font-size: 12px;
+  opacity: 0;
+  transform: translate(-50%, 4px) scale(0.94);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+  pointer-events: none;
 }
 
 .company-planet small {
+  position: absolute;
+  top: calc(100% + 33px);
+  left: 50%;
+  max-width: 150px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 216, 201, 0.72);
+  border-radius: 999px;
+  padding: 3px 8px;
   color: var(--text-muted);
+  background: rgba(255, 253, 248, 0.9);
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 10px;
   font-weight: 800;
+  opacity: 0;
+  transform: translate(-50%, 3px) scale(0.94);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+  pointer-events: none;
+}
+
+.company-planet:hover strong,
+.company-planet:hover small,
+.company-planet:focus-visible strong,
+.company-planet:focus-visible small,
+.company-planet.is-dragging strong,
+.company-planet.is-dragging small {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
 }
 
 .empty-orbit {
@@ -1236,6 +1282,13 @@ h1 {
   box-shadow: 0 12px 28px rgba(8, 38, 75, 0.08);
   font-size: 18px;
   font-weight: 900;
+  line-height: 1;
+}
+
+.map-tool-toggle span {
+  display: block;
+  line-height: 1;
+  transform: translateY(-1px);
 }
 
 .map-tool-menu {
