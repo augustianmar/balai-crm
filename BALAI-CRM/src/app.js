@@ -39,6 +39,7 @@ const state = {
   editId: null,
   prefillService: "",
   prefillCompanyId: "",
+  pictureTarget: "",
   moreOpen: false,
   notice: ""
 };
@@ -81,7 +82,8 @@ function normalizeStore(next) {
     companies: (next.companies || []).map((company) => ({
       ...company,
       country: company.country || "Finland",
-      priority: company.priority || "Medium"
+      priority: company.priority || "Medium",
+      image: company.image || ""
     })),
     deals: next.deals || [],
     tasks: next.tasks || [],
@@ -321,7 +323,7 @@ function companyPlanet(company, index, total) {
       style="--planet-x:${x}px; --planet-y:${y}px; --planet-size:${size}px;"
       title="${escapeHtml(company.name)}"
     >
-      <span>${companyInitials(company)}</span>
+      ${companyPlanetVisual(company)}
       <strong>${escapeHtml(company.name || "Unnamed company")}</strong>
       <small>${company.priority || "Medium"} / ${contacts} people</small>
     </button>
@@ -551,7 +553,7 @@ function companyDetail(company) {
       <div class="segmented">${priorities.map((priority) => `<button class="${company.priority === priority ? "active" : ""}" type="button" data-action="set-company-priority" data-priority="${priority}">${priority}<span class="${priority.toLowerCase()}-dot"></span></button>`).join("")}</div>
     </header>
     <section class="hero-contact company-hero">
-      <span class="profile-photo company-photo">${companyInitials(company)}</span>
+      ${companyPhoto(company, "profile-photo company-photo")}
       <p class="account-label">${company.country || "No country"} / ${company.segment || "Company"}</p>
       <h2>${escapeHtml(company.name || "Unnamed company")}</h2>
       <p>${company.website || "No website yet"}</p>
@@ -562,10 +564,14 @@ function companyDetail(company) {
         <span>${formatMoney(pipeline)}</span>
       </div>
       <div class="action-row">
-        <button class="action-button" type="button" data-action="edit-selected-company"><span>${navIcon("home")}</span>Edit</button>
-        <button class="action-button" type="button" data-action="open-modal" data-modal="contact" data-company-id="${company.id}"><span>${navIcon("contacts")}</span>Add person</button>
-        <button class="action-button" type="button" data-action="open-modal" data-modal="deal" data-company-id="${company.id}"><span>${navIcon("sales")}</span>Add deal</button>
-        <button class="action-button" type="button" data-action="delete-company"><span>${actionIcon("More")}</span>Delete</button>
+        <button class="action-button" type="button" data-action="open-company-website"><span>${navIcon("website")}</span>Website</button>
+        <button class="action-button" type="button" data-action="open-modal" data-modal="contact" data-company-id="${company.id}"><span>${navIcon("contacts")}</span>Person</button>
+        <button class="action-button" type="button" data-action="open-modal" data-modal="deal" data-company-id="${company.id}"><span>${navIcon("sales")}</span>Deal</button>
+        <button class="action-button" type="button" data-action="edit-selected-company"><span>${navIcon("task")}</span>Note</button>
+        <div class="more-wrap">
+          <button class="action-button" type="button" data-action="toggle-more"><span>${actionIcon("More")}</span>More</button>
+          ${state.moreOpen ? `<div class="more-menu"><button type="button" data-action="edit-selected-company">Edit</button><button type="button" data-action="add-company-picture">${company.image ? "Replace picture" : "Add picture"}</button><button type="button" data-action="delete-company">Delete</button></div>` : ""}
+        </div>
       </div>
     </section>
     <section class="activity">
@@ -642,7 +648,7 @@ function companyRow(company) {
   const deals = store.deals.filter((deal) => deal.companyId === company.id).length;
   return `
     <button class="contact-row company-row ${state.selectedCompanyId === company.id ? "selected" : ""}" type="button" data-action="open-company" data-id="${company.id}">
-      <span class="mini-avatar company-avatar">${companyInitials(company)}</span>
+      ${companyPhoto(company, "mini-avatar company-avatar")}
       <span class="contact-copy"><strong>${escapeHtml(company.name || "Unnamed company")}</strong><small>${company.segment || "Company"} / ${company.country || "No country"}</small><small>${people} people / ${deals} deals</small></span>
       <span class="row-meta"><span class="priority-pill ${priorityClass(company.priority)}">${company.priority || "Medium"}</span></span>
     </button>
@@ -804,6 +810,7 @@ function handleAction(event) {
     state.editId = null;
     state.prefillService = "";
     state.prefillCompanyId = "";
+    state.pictureTarget = "";
     render();
   } else if (action === "set-country") {
     state.country = el.dataset.country;
@@ -837,6 +844,7 @@ function handleAction(event) {
   } else if (action === "delete-contact") {
     deleteContact();
   } else if (action === "add-picture") {
+    state.pictureTarget = "contact";
     state.moreOpen = false;
     render();
     setTimeout(() => document.querySelector("#pictureInput")?.click(), 0);
@@ -851,7 +859,15 @@ function handleAction(event) {
   } else if (action === "edit-selected-company") {
     state.modal = "company";
     state.editId = state.selectedCompanyId || selectedCompany()?.id || "";
+    state.moreOpen = false;
     render();
+  } else if (action === "add-company-picture") {
+    state.pictureTarget = "company";
+    state.moreOpen = false;
+    render();
+    setTimeout(() => document.querySelector("#pictureInput")?.click(), 0);
+  } else if (action === "open-company-website") {
+    openCompanyWebsite();
   } else if (action === "delete-company") {
     deleteCompany();
   } else if (action === "edit-deal") {
@@ -915,7 +931,8 @@ function saveCompany(event) {
     segment: data.segment.trim(),
     priority: data.priority || "Medium",
     website: data.website.trim(),
-    notes: data.notes.trim()
+    notes: data.notes.trim(),
+    image: existing?.image || ""
   };
   store.companies = existing ? store.companies.map((item) => item.id === existing.id ? next : item) : [next, ...store.companies];
   state.selectedCompanyId = next.id;
@@ -969,14 +986,26 @@ function closeAndPersist(message) {
   state.editId = null;
   state.prefillService = "";
   state.prefillCompanyId = "";
+  state.pictureTarget = "";
   persist(message);
 }
 
 function savePicture(event) {
   const file = event.target.files?.[0];
-  if (!file || !state.selectedContactId) return;
+  if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => updateContact(state.selectedContactId, { image: String(reader.result) }, "Picture added");
+  reader.onload = () => {
+    const image = String(reader.result);
+    if (state.pictureTarget === "company") {
+      updateCompany(state.selectedCompanyId || selectedCompany()?.id, { image }, "Company picture saved");
+    } else if (state.selectedContactId) {
+      updateContact(state.selectedContactId, { image }, "Picture saved");
+    } else {
+      flash("No contact selected");
+    }
+    event.target.value = "";
+    state.pictureTarget = "";
+  };
   reader.readAsDataURL(file);
 }
 
@@ -990,6 +1019,20 @@ function updateCompany(id, patch, message = "Company updated") {
   store.companies = store.companies.map((company) => company.id === id ? { ...company, ...patch } : company);
   state.selectedCompanyId = id;
   persist(message);
+}
+
+function openCompanyWebsite() {
+  const company = selectedCompany();
+  if (!company?.website) {
+    flash("No website saved yet");
+    return;
+  }
+  window.open(normalizeUrl(company.website), "_blank", "noopener,noreferrer");
+}
+
+function normalizeUrl(url) {
+  const clean = String(url || "").trim();
+  return /^https?:\/\//i.test(clean) ? clean : `https://${clean}`;
 }
 
 function deleteContact() {
@@ -1046,6 +1089,16 @@ function infoSection(title, rows) {
 function avatar(contact, className) {
   if (contact.image) return `<span class="${className} avatar-image"><img src="${contact.image}" alt="${escapeHtml(contactName(contact.id))}" /></span>`;
   return `<span class="${className}" style="--avatar-color:${contact.color || "#afd0f1"}">${initials(contact)}</span>`;
+}
+
+function companyPhoto(company, className) {
+  if (company.image) return `<span class="${className} avatar-image company-image"><img src="${company.image}" alt="${escapeHtml(company.name || "Company")}" /></span>`;
+  return `<span class="${className}">${companyInitials(company)}</span>`;
+}
+
+function companyPlanetVisual(company) {
+  if (company.image) return `<span class="planet-image"><img src="${company.image}" alt="${escapeHtml(company.name || "Company")}" /></span>`;
+  return `<span>${companyInitials(company)}</span>`;
 }
 
 function companyName(id) {
@@ -1129,7 +1182,8 @@ function navIcon(key) {
     upload: `<svg viewBox="0 0 24 24"><path d="M12 21V9"/><path d="m7 14 5-5 5 5"/><path d="M5 3h14"/></svg>`,
     task: `<svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-5"/><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/></svg>`,
     message: `<svg viewBox="0 0 24 24"><path d="M21 14a4 4 0 0 1-4 4H9l-6 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/></svg>`,
-    info: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`
+    info: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`,
+    website: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20"/><path d="M12 2a15 15 0 0 0 0 20"/></svg>`
   };
   return icons[key] || icons.plus;
 }

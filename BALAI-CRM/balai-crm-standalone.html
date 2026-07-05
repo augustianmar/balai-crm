@@ -602,10 +602,18 @@ h1 {
     linear-gradient(135deg, var(--navy), #174977 58%, var(--gold));
 }
 
+.company-image {
+  border-color: rgba(255, 253, 248, 0.96);
+  background: #efe8db;
+}
+
 .company-photo {
   color: #fffaf1;
   font-family: var(--font-display);
   font-size: 40px;
+  box-shadow:
+    0 16px 36px rgba(8, 38, 75, 0.16),
+    0 0 0 1px rgba(185, 133, 58, 0.18);
 }
 
 .account-label {
@@ -649,7 +657,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .more-wrap {
@@ -661,12 +669,12 @@ h1 {
   right: 0;
   z-index: 10;
   display: grid;
-  width: 150px;
+  width: 168px;
   margin-top: 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fffdf8;
-  box-shadow: var(--shadow);
+  box-shadow: 0 18px 42px rgba(8, 38, 75, 0.14);
   overflow: hidden;
 }
 
@@ -688,9 +696,9 @@ h1 {
   display: grid;
   justify-items: center;
   gap: 7px;
-  min-width: 56px;
+  min-width: 62px;
   border: 0;
-  color: #31373d;
+  color: #4d463f;
   background: transparent;
   font-size: 12px;
   font-weight: 800;
@@ -702,13 +710,17 @@ h1 {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: #efe7d8;
+  border: 1px solid rgba(226, 216, 201, 0.9);
+  background: linear-gradient(180deg, #fffdf8, #efe7d8);
   color: var(--navy);
   font-size: 18px;
+  box-shadow: 0 8px 18px rgba(8, 38, 75, 0.07);
 }
 
 .action-button:hover span {
-  background: #e3d2b8;
+  border-color: #ceb386;
+  background: linear-gradient(180deg, #fffaf1, #e3d2b8);
+  box-shadow: 0 10px 22px rgba(8, 38, 75, 0.11);
 }
 
 .activity {
@@ -744,8 +756,8 @@ h1 {
   padding: 21px 22px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fffdf8;
-  box-shadow: var(--shadow);
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(251, 246, 237, 0.94));
+  box-shadow: 0 16px 40px rgba(8, 38, 75, 0.07);
 }
 
 .activity-card h4 {
@@ -843,6 +855,8 @@ h1 {
 }
 
 .workspace-header {
+  position: relative;
+  z-index: 8;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -850,7 +864,10 @@ h1 {
   min-height: 92px;
   padding: 24px 30px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 253, 248, 0.92);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(255, 253, 248, 0.9)),
+    radial-gradient(circle at 18% 0%, rgba(185, 133, 58, 0.12), transparent 20rem);
+  box-shadow: 0 14px 34px rgba(8, 38, 75, 0.06);
   backdrop-filter: blur(14px);
 }
 
@@ -883,9 +900,10 @@ h1 {
   border-radius: 7px;
   padding: 0 12px;
   color: var(--navy);
-  background: #fffdf8;
+  background: linear-gradient(180deg, #fffdf8, #fbf6ed);
   font-size: 13px;
   font-weight: 800;
+  box-shadow: 0 5px 14px rgba(8, 38, 75, 0.04);
 }
 
 .filter-row button {
@@ -911,6 +929,7 @@ h1 {
 .campaign-card button:hover {
   border-color: #ceb386;
   background: #f4eadb;
+  box-shadow: 0 8px 20px rgba(8, 38, 75, 0.08);
 }
 
 .workspace-grid {
@@ -933,9 +952,10 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
+    radial-gradient(circle at 50% 48%, rgba(185, 133, 58, 0.16), transparent 10rem),
     radial-gradient(circle at center, rgba(255, 253, 248, 0.96) 0 16%, rgba(244, 239, 229, 0.7) 40%, rgba(255, 253, 248, 0.92) 100%),
     linear-gradient(135deg, #fffdf8, #f4efe5);
-  box-shadow: var(--shadow);
+  box-shadow: 0 24px 70px rgba(8, 38, 75, 0.1);
 }
 
 .orbit-ring {
@@ -975,8 +995,11 @@ h1 {
   padding: 18px;
   border: 1px solid rgba(185, 133, 58, 0.36);
   border-radius: 50%;
-  background: rgba(255, 253, 248, 0.96);
-  box-shadow: 0 24px 60px rgba(8, 38, 75, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(251, 246, 237, 0.96));
+  box-shadow:
+    0 24px 60px rgba(8, 38, 75, 0.14),
+    inset 0 0 0 8px rgba(185, 133, 58, 0.06);
   transform: translate(-50%, -50%);
 }
 
@@ -1015,10 +1038,13 @@ h1 {
   border-radius: 50%;
   padding: 10px;
   color: var(--navy);
-  background: rgba(255, 253, 248, 0.95);
-  box-shadow: 0 14px 36px rgba(8, 38, 75, 0.12);
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(251, 246, 237, 0.95));
+  box-shadow:
+    0 14px 36px rgba(8, 38, 75, 0.12),
+    inset 0 0 0 5px rgba(255, 253, 248, 0.68);
   text-align: center;
   transform: translate(calc(-50% + var(--planet-x)), calc(-50% + var(--planet-y)));
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
 }
 
 .company-planet.high {
@@ -1036,7 +1062,10 @@ h1 {
 
 .company-planet:hover {
   border-color: var(--gold);
-  box-shadow: 0 18px 44px rgba(8, 38, 75, 0.18);
+  box-shadow:
+    0 22px 54px rgba(8, 38, 75, 0.2),
+    inset 0 0 0 5px rgba(255, 253, 248, 0.76);
+  transform: translate(calc(-50% + var(--planet-x)), calc(-53% + var(--planet-y)));
 }
 
 .company-planet span {
@@ -1050,6 +1079,37 @@ h1 {
   background: linear-gradient(135deg, var(--navy), var(--gold));
   font-family: var(--font-display);
   font-weight: 700;
+}
+
+.company-planet .planet-image {
+  overflow: hidden;
+  width: calc(var(--planet-size) - 22px);
+  height: calc(var(--planet-size) - 22px);
+  margin: 0;
+  border: 2px solid rgba(255, 253, 248, 0.9);
+  background: #efe8db;
+  box-shadow: 0 8px 18px rgba(8, 38, 75, 0.12);
+}
+
+.company-planet .planet-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.company-planet .planet-image + strong {
+  position: absolute;
+  bottom: -24px;
+  max-width: 150px;
+  border: 1px solid rgba(226, 216, 201, 0.82);
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 8px 20px rgba(8, 38, 75, 0.08);
+}
+
+.company-planet .planet-image ~ small {
+  display: none;
 }
 
 .company-planet strong,
@@ -1824,6 +1884,7 @@ const state = {
   editId: null,
   prefillService: "",
   prefillCompanyId: "",
+  pictureTarget: "",
   moreOpen: false,
   notice: ""
 };
@@ -1866,7 +1927,8 @@ function normalizeStore(next) {
     companies: (next.companies || []).map((company) => ({
       ...company,
       country: company.country || "Finland",
-      priority: company.priority || "Medium"
+      priority: company.priority || "Medium",
+      image: company.image || ""
     })),
     deals: next.deals || [],
     tasks: next.tasks || [],
@@ -2106,7 +2168,7 @@ function companyPlanet(company, index, total) {
       style="--planet-x:${x}px; --planet-y:${y}px; --planet-size:${size}px;"
       title="${escapeHtml(company.name)}"
     >
-      <span>${companyInitials(company)}</span>
+      ${companyPlanetVisual(company)}
       <strong>${escapeHtml(company.name || "Unnamed company")}</strong>
       <small>${company.priority || "Medium"} / ${contacts} people</small>
     </button>
@@ -2336,7 +2398,7 @@ function companyDetail(company) {
       <div class="segmented">${priorities.map((priority) => `<button class="${company.priority === priority ? "active" : ""}" type="button" data-action="set-company-priority" data-priority="${priority}">${priority}<span class="${priority.toLowerCase()}-dot"></span></button>`).join("")}</div>
     </header>
     <section class="hero-contact company-hero">
-      <span class="profile-photo company-photo">${companyInitials(company)}</span>
+      ${companyPhoto(company, "profile-photo company-photo")}
       <p class="account-label">${company.country || "No country"} / ${company.segment || "Company"}</p>
       <h2>${escapeHtml(company.name || "Unnamed company")}</h2>
       <p>${company.website || "No website yet"}</p>
@@ -2347,10 +2409,14 @@ function companyDetail(company) {
         <span>${formatMoney(pipeline)}</span>
       </div>
       <div class="action-row">
-        <button class="action-button" type="button" data-action="edit-selected-company"><span>${navIcon("home")}</span>Edit</button>
-        <button class="action-button" type="button" data-action="open-modal" data-modal="contact" data-company-id="${company.id}"><span>${navIcon("contacts")}</span>Add person</button>
-        <button class="action-button" type="button" data-action="open-modal" data-modal="deal" data-company-id="${company.id}"><span>${navIcon("sales")}</span>Add deal</button>
-        <button class="action-button" type="button" data-action="delete-company"><span>${actionIcon("More")}</span>Delete</button>
+        <button class="action-button" type="button" data-action="open-company-website"><span>${navIcon("website")}</span>Website</button>
+        <button class="action-button" type="button" data-action="open-modal" data-modal="contact" data-company-id="${company.id}"><span>${navIcon("contacts")}</span>Person</button>
+        <button class="action-button" type="button" data-action="open-modal" data-modal="deal" data-company-id="${company.id}"><span>${navIcon("sales")}</span>Deal</button>
+        <button class="action-button" type="button" data-action="edit-selected-company"><span>${navIcon("task")}</span>Note</button>
+        <div class="more-wrap">
+          <button class="action-button" type="button" data-action="toggle-more"><span>${actionIcon("More")}</span>More</button>
+          ${state.moreOpen ? `<div class="more-menu"><button type="button" data-action="edit-selected-company">Edit</button><button type="button" data-action="add-company-picture">${company.image ? "Replace picture" : "Add picture"}</button><button type="button" data-action="delete-company">Delete</button></div>` : ""}
+        </div>
       </div>
     </section>
     <section class="activity">
@@ -2427,7 +2493,7 @@ function companyRow(company) {
   const deals = store.deals.filter((deal) => deal.companyId === company.id).length;
   return `
     <button class="contact-row company-row ${state.selectedCompanyId === company.id ? "selected" : ""}" type="button" data-action="open-company" data-id="${company.id}">
-      <span class="mini-avatar company-avatar">${companyInitials(company)}</span>
+      ${companyPhoto(company, "mini-avatar company-avatar")}
       <span class="contact-copy"><strong>${escapeHtml(company.name || "Unnamed company")}</strong><small>${company.segment || "Company"} / ${company.country || "No country"}</small><small>${people} people / ${deals} deals</small></span>
       <span class="row-meta"><span class="priority-pill ${priorityClass(company.priority)}">${company.priority || "Medium"}</span></span>
     </button>
@@ -2589,6 +2655,7 @@ function handleAction(event) {
     state.editId = null;
     state.prefillService = "";
     state.prefillCompanyId = "";
+    state.pictureTarget = "";
     render();
   } else if (action === "set-country") {
     state.country = el.dataset.country;
@@ -2622,6 +2689,7 @@ function handleAction(event) {
   } else if (action === "delete-contact") {
     deleteContact();
   } else if (action === "add-picture") {
+    state.pictureTarget = "contact";
     state.moreOpen = false;
     render();
     setTimeout(() => document.querySelector("#pictureInput")?.click(), 0);
@@ -2636,7 +2704,15 @@ function handleAction(event) {
   } else if (action === "edit-selected-company") {
     state.modal = "company";
     state.editId = state.selectedCompanyId || selectedCompany()?.id || "";
+    state.moreOpen = false;
     render();
+  } else if (action === "add-company-picture") {
+    state.pictureTarget = "company";
+    state.moreOpen = false;
+    render();
+    setTimeout(() => document.querySelector("#pictureInput")?.click(), 0);
+  } else if (action === "open-company-website") {
+    openCompanyWebsite();
   } else if (action === "delete-company") {
     deleteCompany();
   } else if (action === "edit-deal") {
@@ -2700,7 +2776,8 @@ function saveCompany(event) {
     segment: data.segment.trim(),
     priority: data.priority || "Medium",
     website: data.website.trim(),
-    notes: data.notes.trim()
+    notes: data.notes.trim(),
+    image: existing?.image || ""
   };
   store.companies = existing ? store.companies.map((item) => item.id === existing.id ? next : item) : [next, ...store.companies];
   state.selectedCompanyId = next.id;
@@ -2754,14 +2831,26 @@ function closeAndPersist(message) {
   state.editId = null;
   state.prefillService = "";
   state.prefillCompanyId = "";
+  state.pictureTarget = "";
   persist(message);
 }
 
 function savePicture(event) {
   const file = event.target.files?.[0];
-  if (!file || !state.selectedContactId) return;
+  if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => updateContact(state.selectedContactId, { image: String(reader.result) }, "Picture added");
+  reader.onload = () => {
+    const image = String(reader.result);
+    if (state.pictureTarget === "company") {
+      updateCompany(state.selectedCompanyId || selectedCompany()?.id, { image }, "Company picture saved");
+    } else if (state.selectedContactId) {
+      updateContact(state.selectedContactId, { image }, "Picture saved");
+    } else {
+      flash("No contact selected");
+    }
+    event.target.value = "";
+    state.pictureTarget = "";
+  };
   reader.readAsDataURL(file);
 }
 
@@ -2775,6 +2864,20 @@ function updateCompany(id, patch, message = "Company updated") {
   store.companies = store.companies.map((company) => company.id === id ? { ...company, ...patch } : company);
   state.selectedCompanyId = id;
   persist(message);
+}
+
+function openCompanyWebsite() {
+  const company = selectedCompany();
+  if (!company?.website) {
+    flash("No website saved yet");
+    return;
+  }
+  window.open(normalizeUrl(company.website), "_blank", "noopener,noreferrer");
+}
+
+function normalizeUrl(url) {
+  const clean = String(url || "").trim();
+  return /^https?:\/\//i.test(clean) ? clean : `https://${clean}`;
 }
 
 function deleteContact() {
@@ -2831,6 +2934,16 @@ function infoSection(title, rows) {
 function avatar(contact, className) {
   if (contact.image) return `<span class="${className} avatar-image"><img src="${contact.image}" alt="${escapeHtml(contactName(contact.id))}" /></span>`;
   return `<span class="${className}" style="--avatar-color:${contact.color || "#afd0f1"}">${initials(contact)}</span>`;
+}
+
+function companyPhoto(company, className) {
+  if (company.image) return `<span class="${className} avatar-image company-image"><img src="${company.image}" alt="${escapeHtml(company.name || "Company")}" /></span>`;
+  return `<span class="${className}">${companyInitials(company)}</span>`;
+}
+
+function companyPlanetVisual(company) {
+  if (company.image) return `<span class="planet-image"><img src="${company.image}" alt="${escapeHtml(company.name || "Company")}" /></span>`;
+  return `<span>${companyInitials(company)}</span>`;
 }
 
 function companyName(id) {
@@ -2914,7 +3027,8 @@ function navIcon(key) {
     upload: `<svg viewBox="0 0 24 24"><path d="M12 21V9"/><path d="m7 14 5-5 5 5"/><path d="M5 3h14"/></svg>`,
     task: `<svg viewBox="0 0 24 24"><path d="M9 11l2 2 4-5"/><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/></svg>`,
     message: `<svg viewBox="0 0 24 24"><path d="M21 14a4 4 0 0 1-4 4H9l-6 4V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/></svg>`,
-    info: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`
+    info: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`,
+    website: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20"/><path d="M12 2a15 15 0 0 0 0 20"/></svg>`
   };
   return icons[key] || icons.plus;
 }
