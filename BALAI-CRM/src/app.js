@@ -2,13 +2,45 @@ const storageKey = "balai-crm-store-v4";
 const app = document.querySelector("#app");
 
 const countries = ["Finland", "Sweden", "Norway", "Indonesia", "Malaysia", "Philippines", "Singapore", "Others"];
-const services = [
-  "Market Opportunity Assessment",
-  "Market Entry & Partner Development",
-  "SEA Market Representation",
-  "Trade Fair & Event Representation",
-  "Cultural & Market Localization",
-  "Internationalization Consulting"
+const serviceTypes = ["Service", "Product"];
+const templateMaxBytes = 1800000;
+const serviceBlueprints = [
+  {
+    id: "market-opportunity-assessment",
+    type: "Product",
+    title: "Market Opportunity Assessment",
+    description: "A reusable market insight product for tourism companies evaluating Southeast Asian growth potential."
+  },
+  {
+    id: "market-entry-partner-development",
+    type: "Service",
+    title: "Market Entry & Partner Development",
+    description: "Partner mapping, outreach, introductions, and relationship-building for selected market entry goals."
+  },
+  {
+    id: "sea-market-representation",
+    type: "Service",
+    title: "SEA Market Representation",
+    description: "Ongoing follow-up, partner communication, lead handling, and market presence for Southeast Asia."
+  },
+  {
+    id: "trade-fair-event-representation",
+    type: "Service",
+    title: "Trade Fair & Event Representation",
+    description: "B2B meeting support, event lead capture, market observation, and post-event reporting."
+  },
+  {
+    id: "cultural-market-localization",
+    type: "Service",
+    title: "Cultural & Market Localization",
+    description: "Review of messaging, customer journey, product fit, and cultural details for specific target markets."
+  },
+  {
+    id: "internationalization-consulting",
+    type: "Service",
+    title: "Internationalization Consulting",
+    description: "Strategic advisory for growth planning, sales structure, funding readiness, and international market development."
+  }
 ];
 const dealStages = ["New lead", "Qualified", "Proposal sent", "Follow-up", "Client", "Lost"];
 const priorities = ["High", "Medium", "Low"];
@@ -79,6 +111,7 @@ const state = {
   prefillService: "",
   prefillCompanyId: "",
   pictureTarget: "",
+  templateServiceId: "",
   moreOpen: false,
   mapMenuOpen: false,
   mapEditMode: false,
@@ -91,6 +124,7 @@ function emptyStore() {
     companies: [],
     deals: [],
     tasks: [],
+    services: defaultServiceRecords(),
     automations: [
       { id: makeId(), title: "Create reminder after new lead", active: true },
       { id: makeId(), title: "Flag high-value deals over EUR 15,000", active: true },
@@ -131,9 +165,56 @@ function normalizeStore(next) {
     })),
     deals: next.deals || [],
     tasks: next.tasks || [],
+    services: normalizeServices(next.services),
     automations: next.automations || emptyStore().automations,
     settings: next.settings || {}
   };
+}
+
+function defaultServiceRecords() {
+  return serviceBlueprints.map((service) => ({ ...service, template: null }));
+}
+
+function normalizeServices(items) {
+  const source = Array.isArray(items) && items.length ? items : defaultServiceRecords();
+  return source.map((service, index) => normalizeService(service, index));
+}
+
+function normalizeService(service, index = 0) {
+  const raw = service || {};
+  const fallback = serviceBlueprints[index] || {
+    id: makeId(),
+    type: "Service",
+    title: "Untitled offer",
+    description: "Describe this service or product."
+  };
+  const isLegacyTitle = typeof raw === "string";
+  return {
+    id: isLegacyTitle ? serviceSlug(raw) : raw.id || fallback.id || makeId(),
+    type: serviceTypes.includes(raw.type) ? raw.type : fallback.type || "Service",
+    title: isLegacyTitle ? raw : raw.title || fallback.title || "Untitled offer",
+    description: isLegacyTitle ? "Create deals around this offer, attach companies, and track follow-up." : raw.description || fallback.description || "",
+    template: normalizeTemplate(raw.template)
+  };
+}
+
+function normalizeTemplate(template) {
+  if (!template || typeof template !== "object" || !template.data) return null;
+  return {
+    name: template.name || "Template",
+    type: template.type || "application/octet-stream",
+    size: Number(template.size || 0),
+    data: template.data,
+    savedAt: template.savedAt || new Date().toISOString()
+  };
+}
+
+function serviceSlug(value) {
+  return String(value || "service")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || makeId();
 }
 
 function persist(message = "Saved") {
@@ -179,6 +260,21 @@ function selectedCompany() {
 
 function selectedDeal() {
   return store.deals.find((deal) => deal.id === state.selectedDealId) || null;
+}
+
+function serviceRecords() {
+  if (!Array.isArray(store.services) || !store.services.length) {
+    store.services = defaultServiceRecords();
+  }
+  return store.services;
+}
+
+function serviceOptions() {
+  return serviceRecords().map((service) => [service.title, service.title]);
+}
+
+function serviceById(id) {
+  return serviceRecords().find((service) => service.id === id) || null;
 }
 
 function filteredContacts() {
@@ -241,6 +337,7 @@ function render() {
       <section class="workspace-page">${renderView()}</section>
       ${renderModal()}
       <input id="pictureInput" class="hidden-input" type="file" accept="image/*" />
+      <input id="serviceTemplateInput" class="hidden-input" type="file" />
       <input id="importInput" class="hidden-input" type="file" accept="application/json,.json" />
       ${state.notice ? `<div class="toast">${state.notice}</div>` : ""}
     </main>
@@ -597,21 +694,38 @@ function renderSales() {
 
 function renderMarketing() {
   return `
-    ${header("Marketing", "BALAI service offers and market positioning.")}
+    ${header(
+      "Marketing",
+      "BALAI service offers, product templates, and market positioning.",
+      `<button type="button" data-action="new-service">${navIcon("plus")} Add offer</button>`
+    )}
     <section class="workspace-grid three-column">
-      ${services
-        .map(
-          (service) => `
-            <article class="workspace-card campaign-card">
-              <span class="priority-pill medium">Service</span>
-              <h2>${service}</h2>
-              <p>Create deals around this offer, attach companies, and track follow-up.</p>
-              <button type="button" data-action="open-modal" data-modal="deal" data-service="${service}">Create deal</button>
-            </article>
-          `
-        )
-        .join("")}
+      ${serviceRecords().map(serviceCard).join("")}
     </section>
+  `;
+}
+
+function serviceCard(service) {
+  const template = service.template;
+  return `
+    <article class="workspace-card campaign-card service-card">
+      <div class="service-card-top">
+        <span class="priority-pill ${service.type === "Product" ? "high" : "medium"}">${escapeHtml(service.type || "Service")}</span>
+        <button class="subtle-button" type="button" data-action="edit-service" data-id="${service.id}">Edit</button>
+      </div>
+      <h2>${escapeHtml(service.title || "Untitled offer")}</h2>
+      <p>${escapeHtml(service.description || "Describe this offer.")}</p>
+      <div class="template-dropzone ${template ? "has-template" : ""}" data-service-id="${service.id}">
+        <span>${template ? "Template saved" : "Drop one template here"}</span>
+        <strong>${template ? escapeHtml(template.name) : "No template yet"}</strong>
+        <small>${template ? `${formatBytes(template.size)} / saved ${formatDate(template.savedAt)}` : "PDF, DOCX, PPTX, XLSX, images, or other files"}</small>
+      </div>
+      <div class="service-actions">
+        <button type="button" data-action="open-modal" data-modal="deal" data-service="${escapeHtml(service.title || "")}">Create deal</button>
+        <button type="button" data-action="attach-template" data-id="${service.id}">${template ? "Replace template" : "Add template"}</button>
+        ${template ? `<a class="button-link" href="${template.data}" download="${escapeHtml(template.name)}">Download</a><button type="button" data-action="remove-template" data-id="${service.id}">Remove</button>` : ""}
+      </div>
+    </article>
   `;
 }
 
@@ -839,7 +953,7 @@ function countryBar(country) {
 
 function renderModal() {
   if (!state.modal) return "";
-  const modalMap = { contact: contactForm, company: companyForm, deal: dealForm, task: taskForm };
+  const modalMap = { contact: contactForm, company: companyForm, deal: dealForm, task: taskForm, service: serviceForm };
   return `<div class="modal-backdrop" role="dialog" aria-modal="true">${(modalMap[state.modal] || contactForm)()}</div>`;
 }
 
@@ -880,11 +994,20 @@ function dealForm() {
     ${select("companyId", "Company", deal.companyId || state.prefillCompanyId, [["", "No company"], ...store.companies.map((company) => [company.id, company.name])])}
     ${select("contactId", "Contact", deal.contactId, [["", "No contact"], ...store.contacts.map((contact) => [contact.id, contactName(contact.id)])])}
     ${select("country", "Country", deal.country, countries)}
-    ${select("service", "Service", deal.service || state.prefillService, services)}
+    ${select("service", "Service / product", deal.service || state.prefillService, serviceOptions())}
     ${select("stage", "Stage", deal.stage, dealStages)}
     ${input("value", "Value EUR", deal.value, "number")}
     ${input("followUpDate", "Follow-up date", deal.followUpDate, "date")}
     ${textarea("notes", "Notes", deal.notes)}
+  `);
+}
+
+function serviceForm() {
+  const service = state.editId ? serviceById(state.editId) : {};
+  return formShell(state.editId ? "Edit service / product" : "Add service / product", "serviceForm", `
+    ${select("type", "Type", service.type || "Service", serviceTypes)}
+    ${input("title", "Title", service.title)}
+    ${textarea("description", "Description", service.description)}
   `);
 }
 
@@ -930,8 +1053,15 @@ function bindEvents() {
   document.querySelector("#companyForm")?.addEventListener("submit", saveCompany);
   document.querySelector("#dealForm")?.addEventListener("submit", saveDeal);
   document.querySelector("#taskForm")?.addEventListener("submit", saveTask);
+  document.querySelector("#serviceForm")?.addEventListener("submit", saveService);
   document.querySelector("#pictureInput")?.addEventListener("change", savePicture);
+  document.querySelector("#serviceTemplateInput")?.addEventListener("change", saveServiceTemplate);
   document.querySelector("#importInput")?.addEventListener("change", importData);
+  document.querySelectorAll(".template-dropzone").forEach((zone) => {
+    zone.addEventListener("dragover", handleTemplateDrag);
+    zone.addEventListener("dragleave", handleTemplateDrag);
+    zone.addEventListener("drop", handleTemplateDrop);
+  });
 }
 
 function handleAction(event) {
@@ -959,6 +1089,7 @@ function handleAction(event) {
     state.prefillService = "";
     state.prefillCompanyId = "";
     state.pictureTarget = "";
+    state.templateServiceId = "";
     render();
   } else if (action === "set-country") {
     state.country = el.dataset.country;
@@ -1045,6 +1176,19 @@ function handleAction(event) {
     state.modal = "deal";
     state.editId = el.dataset.id;
     render();
+  } else if (action === "new-service") {
+    state.modal = "service";
+    state.editId = null;
+    render();
+  } else if (action === "edit-service") {
+    state.modal = "service";
+    state.editId = el.dataset.id;
+    render();
+  } else if (action === "attach-template") {
+    state.templateServiceId = el.dataset.id;
+    setTimeout(() => document.querySelector("#serviceTemplateInput")?.click(), 0);
+  } else if (action === "remove-template") {
+    removeServiceTemplate(el.dataset.id);
   } else if (action === "toggle-task") {
     store.tasks = store.tasks.map((task) => task.id === el.dataset.id ? { ...task, done: !task.done } : task);
     persist("Task updated");
@@ -1185,12 +1329,32 @@ function saveTask(event) {
   closeAndPersist("Task saved");
 }
 
+function saveService(event) {
+  event.preventDefault();
+  const data = Object.fromEntries(new FormData(event.currentTarget));
+  const existing = serviceById(state.editId);
+  const next = {
+    ...(existing || {}),
+    id: existing?.id || makeId(),
+    type: serviceTypes.includes(data.type) ? data.type : "Service",
+    title: data.title.trim() || "Untitled offer",
+    description: data.description.trim(),
+    template: existing?.template || null
+  };
+  store.services = existing ? serviceRecords().map((service) => service.id === existing.id ? next : service) : [...serviceRecords(), next];
+  if (existing?.title && existing.title !== next.title) {
+    store.deals = store.deals.map((deal) => deal.service === existing.title ? { ...deal, service: next.title } : deal);
+  }
+  closeAndPersist("Offer saved");
+}
+
 function closeAndPersist(message) {
   state.modal = null;
   state.editId = null;
   state.prefillService = "";
   state.prefillCompanyId = "";
   state.pictureTarget = "";
+  state.templateServiceId = "";
   persist(message);
 }
 
@@ -1211,6 +1375,56 @@ function savePicture(event) {
     state.pictureTarget = "";
   };
   reader.readAsDataURL(file);
+}
+
+function saveServiceTemplate(event) {
+  const file = event.target.files?.[0];
+  if (!file || !state.templateServiceId) return;
+  saveServiceTemplateFile(state.templateServiceId, file);
+  event.target.value = "";
+}
+
+function handleTemplateDrag(event) {
+  event.preventDefault();
+  event.currentTarget.classList.toggle("is-dragover", event.type === "dragover");
+}
+
+function handleTemplateDrop(event) {
+  event.preventDefault();
+  const zone = event.currentTarget;
+  zone.classList.remove("is-dragover");
+  const file = event.dataTransfer?.files?.[0];
+  const serviceId = zone.dataset.serviceId;
+  if (!file || !serviceId) return;
+  saveServiceTemplateFile(serviceId, file);
+}
+
+function saveServiceTemplateFile(serviceId, file) {
+  if (file.size > templateMaxBytes) {
+    flash(`Template is too large. Keep it under ${formatBytes(templateMaxBytes)}.`);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const template = {
+      name: file.name,
+      type: file.type || "application/octet-stream",
+      size: file.size,
+      data: String(reader.result),
+      savedAt: new Date().toISOString()
+    };
+    store.services = serviceRecords().map((service) => service.id === serviceId ? { ...service, template } : service);
+    state.templateServiceId = "";
+    persist("Template saved");
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeServiceTemplate(serviceId) {
+  const service = serviceById(serviceId);
+  if (!service?.template || !confirm(`Remove template from ${service.title}?`)) return;
+  store.services = serviceRecords().map((item) => item.id === serviceId ? { ...item, template: null } : item);
+  persist("Template removed");
 }
 
 function updateContact(id, patch, message = "Contact updated") {
@@ -1419,6 +1633,18 @@ function randomColor() {
 
 function formatMoney(value) {
   return `EUR ${Number(value || 0).toLocaleString("en-US")}`;
+}
+
+function formatBytes(value) {
+  const bytes = Number(value || 0);
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  return new Date(value).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function escapeHtml(value) {
