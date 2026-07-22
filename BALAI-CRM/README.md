@@ -25,8 +25,3 @@ npm run check
 ```
 
 The app has no runtime dependencies. The check command only verifies the JavaScript syntax with Node.
-
-
-## Desktop outfit v19
-
-The refined mobile BALAI visual language is now carried into the desktop layout. The finalized BALAI vector emblem is used throughout the interface. Existing browser data is preserved because the app continues to use `balai-crm-store-v4`; a one-time local backup is also stored under `balai-crm-store-v4-before-desktop-outfit-v19`.

@@ -4,6 +4,11 @@ const CORE_ASSETS = [
   "./index.html",
   "./src/app.js",
   "./src/styles.css",
+  "./src/japanese-theme.css",
+  "./assets/balai-final-logo.svg",
+  "./assets/balai-final-emblem.svg",
+  "./assets/balai-final-emblem-192.png",
+  "./assets/balai-final-emblem-512.png",
   "./assets/balai-logo.png",
   "./assets/balai-orbit-logo.png",
   "./manifest.webmanifest"

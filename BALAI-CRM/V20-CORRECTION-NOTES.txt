@@ -1,0 +1,20 @@
+BALAI CRM v20 — Corrected Japanese Visual Skin
+
+THIS VERSION KEEPS THE EXISTING PC LAYOUT.
+
+Changed:
+- visual colors, textures, borders, shadows and typography treatment
+- Japanese-influenced cream paper / navy / gold / burgundy aesthetic
+- old logo replaced with the final approved BALAI vector identity
+- PWA icons updated from the final vector
+- one-time local backup of the current CRM data
+
+Not changed:
+- desktop grid and panel layout
+- navigation placement
+- contact, company, deal, task or service structures
+- map layouts and functionality
+- saved data key: balai-crm-store-v4
+- existing contacts or other records
+
+Ignore the previous v19 package.

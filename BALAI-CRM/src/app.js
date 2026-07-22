@@ -1,12 +1,12 @@
 const storageKey = "balai-crm-store-v4";
-const responsiveUpgradeBackupKey = "balai-crm-store-v4-before-desktop-outfit-v19";
+const japaneseSkinBackupKey = "balai-crm-store-v4-before-japanese-skin-v20";
 try {
-  const existingBalaiData = localStorage.getItem(storageKey);
-  if (existingBalaiData && !localStorage.getItem(responsiveUpgradeBackupKey)) {
-    localStorage.setItem(responsiveUpgradeBackupKey, existingBalaiData);
+  const savedBalaiStore = localStorage.getItem(storageKey);
+  if (savedBalaiStore && !localStorage.getItem(japaneseSkinBackupKey)) {
+    localStorage.setItem(japaneseSkinBackupKey, savedBalaiStore);
   }
 } catch {
-  // Continue normally if browser storage is unavailable.
+  // The CRM continues normally if browser storage is unavailable.
 }
 const app = document.querySelector("#app");
 
@@ -358,7 +358,7 @@ function renderSidebar() {
   return `
     <aside class="sidebar" aria-label="Main navigation">
       <button class="brand-mark logo-mark" type="button" data-action="nav" data-view="home" title="BALAI CRM">
-        <img src="./assets/balai-emblem-final.svg" alt="BALAI" />
+        <img src="./assets/balai-final-emblem.svg" alt="BALAI" />
       </button>
       <button class="quick-add" aria-label="Add contact" data-action="open-modal" data-modal="contact">+</button>
       <nav class="nav-list">
@@ -468,7 +468,7 @@ function renderOrbitMap() {
       <div class="orbit-ring orbit-medium"></div>
       <div class="orbit-ring orbit-low"></div>
       <div class="system-core">
-        <img src="./assets/balai-emblem-final.svg" alt="BALAI" />
+        <img src="./assets/balai-final-logo.svg" alt="BALAI" />
       </div>
       ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
     </article>
