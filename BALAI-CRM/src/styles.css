@@ -2401,3 +2401,788 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+/* BALAI mobile app refinement */
+html,
+body {
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: rgba(185, 133, 58, 0.18);
+}
+
+@media (max-width: 720px) {
+  :root {
+    --mobile-nav-height: 76px;
+    --mobile-pad: 16px;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at top left, rgba(185, 133, 58, 0.1), transparent 18rem),
+      var(--cream);
+  }
+
+  .crm-shell,
+  .workspace-shell {
+    display: block;
+    min-height: 100dvh;
+    background: var(--cream);
+  }
+
+  .workspace-page {
+    min-height: 100dvh;
+    padding-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 18px);
+    overflow: visible;
+  }
+
+  .sidebar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 80;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(255, 250, 241, 0.14);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 42%),
+      rgba(7, 29, 58, 0.98);
+    box-shadow: 0 -18px 42px rgba(7, 29, 58, 0.24);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    backdrop-filter: blur(18px);
+  }
+
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .brand-mark.logo-mark {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .quick-add {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    margin: 0;
+    font-size: 28px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  }
+
+  .nav-list {
+    display: flex;
+    flex: 1 0 auto;
+    gap: 6px;
+    width: auto;
+  }
+
+  .nav-item {
+    flex: 0 0 58px;
+    min-height: 54px;
+    border-radius: 14px;
+    padding: 7px 5px 6px;
+  }
+
+  .nav-item svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .nav-item span {
+    display: block;
+    max-width: 54px;
+    font-size: 9px;
+    line-height: 1.1;
+  }
+
+  .help-button,
+  .user-avatar {
+    display: none;
+  }
+
+  .workspace-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    align-items: flex-start;
+    gap: 14px;
+    min-height: auto;
+    padding: 18px var(--mobile-pad) 16px;
+    border-bottom-color: rgba(226, 216, 201, 0.78);
+    box-shadow: 0 12px 28px rgba(8, 38, 75, 0.08);
+  }
+
+  .workspace-header h1 {
+    font-size: clamp(30px, 10vw, 42px);
+  }
+
+  .workspace-header p {
+    max-width: 34rem;
+    font-size: 14px;
+  }
+
+  .workspace-actions {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .workspace-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .workspace-actions button,
+  .workspace-card button,
+  .campaign-card button,
+  .subtle-button,
+  .button-link,
+  .service-actions button {
+    min-height: 42px;
+    min-width: 44px;
+    border-radius: 11px;
+    padding-inline: 14px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .workspace-grid,
+  .home-view-switch,
+  .home-system-layout,
+  .search-page-card,
+  .market-board,
+  .pipeline-board {
+    padding-inline: var(--mobile-pad);
+  }
+
+  .workspace-grid,
+  .metrics-grid,
+  .three-column,
+  .search-results,
+  .market-board,
+  .pipeline-board {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .workspace-card,
+  .campaign-card,
+  .service-card,
+  .pipeline-column,
+  .search-page-card {
+    border-radius: 16px;
+    box-shadow: 0 16px 38px rgba(8, 38, 75, 0.07);
+  }
+
+  .home-view-switch {
+    padding-top: 16px;
+  }
+
+  .home-tabs {
+    width: 100%;
+  }
+
+  .contact-tabs {
+    gap: 8px;
+    padding: 12px var(--mobile-pad) 0;
+  }
+
+  .contact-tabs button {
+    min-height: 42px;
+    border-radius: 12px;
+  }
+
+  .home-system-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    overflow: visible;
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
+  .relationship-system,
+  .world-map-panel {
+    width: 100%;
+    min-width: 0;
+    min-height: clamp(430px, 116vw, 560px);
+    border-radius: 18px;
+    box-shadow: 0 22px 58px rgba(8, 38, 75, 0.11);
+  }
+
+  .relationship-system {
+    background:
+      radial-gradient(circle at 50% 52%, rgba(185, 133, 58, 0.1), transparent 7rem),
+      radial-gradient(circle at center, rgba(255, 253, 248, 0.98) 0 15%, rgba(244, 239, 229, 0.48) 50%, rgba(255, 253, 248, 0.95) 100%),
+      linear-gradient(135deg, #fffdf8, #f4efe5);
+  }
+
+  .map-title {
+    top: 14px;
+    left: 14px;
+    right: 70px;
+    max-width: none;
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+
+  .map-title strong {
+    font-size: 27px;
+  }
+
+  .map-title p {
+    font-size: 12px;
+  }
+
+  .map-tools {
+    top: 14px;
+    right: 14px;
+  }
+
+  .map-tool-toggle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+  }
+
+  .map-tool-menu {
+    width: min(240px, calc(100vw - 32px));
+    border-radius: 14px;
+  }
+
+  .map-edit-hint {
+    top: 104px;
+    left: 14px;
+    right: 14px;
+    width: auto;
+    text-align: center;
+  }
+
+  .orbit-high {
+    width: min(34vw, 170px);
+    height: min(34vw, 170px);
+  }
+
+  .orbit-medium {
+    width: min(53vw, 264px);
+    height: min(53vw, 264px);
+  }
+
+  .orbit-low {
+    width: min(72vw, 356px);
+    height: min(72vw, 356px);
+  }
+
+  .system-core {
+    width: 78px;
+    height: 78px;
+    box-shadow:
+      0 18px 42px rgba(8, 38, 75, 0.13),
+      inset 0 0 0 4px rgba(185, 133, 58, 0.05),
+      inset 0 0 0 1px rgba(255, 253, 248, 0.86);
+  }
+
+  .system-core img {
+    width: 61px;
+    height: 61px;
+  }
+
+  .company-planet {
+    padding: 3px;
+  }
+
+  .company-planet:hover,
+  .company-planet:focus-visible,
+  .company-planet.is-dragging {
+    z-index: 28;
+  }
+
+  .company-planet:hover .planet-image,
+  .company-planet:focus-visible .planet-image,
+  .company-planet.is-dragging .planet-image,
+  .company-planet:hover > span,
+  .company-planet:focus-visible > span,
+  .company-planet.is-dragging > span {
+    width: var(--planet-expanded);
+    height: var(--planet-expanded);
+  }
+
+  .world-map {
+    inset: 112px 12px 18px;
+    border-radius: 16px;
+  }
+
+  .world-map-art {
+    inset: 16px 8px 16px;
+    width: calc(100% - 16px);
+    height: calc(100% - 32px);
+  }
+
+  .map-marker i {
+    width: 16px;
+    height: 16px;
+    font-size: 6px;
+  }
+
+  .map-marker.high i {
+    width: 19px;
+    height: 19px;
+  }
+
+  .map-marker:hover i,
+  .map-marker:focus-visible i,
+  .map-marker.is-dragging i {
+    width: 46px;
+    height: 46px;
+    font-size: 13px;
+  }
+
+  .system-summary {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .contacts-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .people-panel,
+  .contact-stage,
+  .info-panel,
+  .crm-panel {
+    border-right: 0;
+  }
+
+  .people-panel {
+    min-height: auto;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .panel-header,
+  .stage-toolbar,
+  .info-header,
+  .panel-header.compact {
+    min-height: auto;
+    padding: 14px var(--mobile-pad);
+  }
+
+  .contact-list {
+    max-height: 48dvh;
+    overflow: auto;
+    padding-bottom: 10px;
+  }
+
+  .contact-row {
+    margin-inline: 10px;
+    border-radius: 14px;
+  }
+
+  .contact-stage {
+    min-height: auto;
+  }
+
+  .stage-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 12;
+    background: rgba(244, 239, 229, 0.96);
+    backdrop-filter: blur(14px);
+  }
+
+  .segmented {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 14px;
+  }
+
+  .segmented button {
+    flex: 1 0 auto;
+    min-width: 88px;
+    justify-content: center;
+  }
+
+  .close-button {
+    right: 12px;
+  }
+
+  .hero-contact {
+    padding: 28px var(--mobile-pad) 26px;
+  }
+
+  .profile-photo,
+  .company-photo {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 16px;
+  }
+
+  .hero-contact h2 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: clamp(28px, 9vw, 38px);
+    text-align: center;
+  }
+
+  .hero-contact p {
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .action-row {
+    gap: 10px;
+  }
+
+  .action-button {
+    min-width: 56px;
+    font-size: 11px;
+  }
+
+  .action-button span {
+    width: 40px;
+    height: 40px;
+  }
+
+  .more-menu {
+    position: fixed;
+    right: 16px;
+    bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 14px);
+    width: min(260px, calc(100vw - 32px));
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .info-section {
+    padding: 22px var(--mobile-pad) 18px;
+  }
+
+  .report-bar {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .automation-row {
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+
+  .service-card {
+    min-height: auto;
+    gap: 14px;
+  }
+
+  .service-card-top,
+  .service-actions {
+    align-items: stretch;
+  }
+
+  .service-actions button,
+  .service-actions .button-link {
+    flex: 1 1 auto;
+  }
+
+  .template-dropzone {
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .modal-backdrop {
+    align-items: end;
+    padding: 0;
+  }
+
+  .edit-modal {
+    width: 100%;
+    max-height: min(92dvh, 860px);
+    border-radius: 22px 22px 0 0;
+  }
+
+  .edit-modal header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    padding: 18px var(--mobile-pad);
+    background: rgba(255, 253, 248, 0.96);
+    backdrop-filter: blur(14px);
+  }
+
+  .edit-modal footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 14px var(--mobile-pad) calc(14px + env(safe-area-inset-bottom));
+    background: rgba(255, 253, 248, 0.96);
+    backdrop-filter: blur(14px);
+  }
+
+  .edit-modal footer button {
+    min-height: 46px;
+    border-radius: 12px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 13px;
+    padding: 18px var(--mobile-pad) 22px;
+  }
+
+  .form-grid input,
+  .form-grid select,
+  .form-grid textarea,
+  .search-box input {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-item {
+    flex-basis: 52px;
+  }
+
+  .nav-item span {
+    font-size: 8px;
+  }
+
+  .brand-mark.logo-mark,
+  .quick-add {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .map-title strong {
+    font-size: 24px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .map-marker:active i {
+    width: 46px;
+    height: 46px;
+  }
+
+  .company-planet:active .planet-image,
+  .company-planet:active > span {
+    width: var(--planet-expanded);
+    height: var(--planet-expanded);
+  }
+}
+
+
+/* BALAI desktop outfit v19 — mirrors the refined mobile visual language. */
+@media (min-width: 721px) {
+  :root {
+    --desktop-radius-lg: 20px;
+    --desktop-radius-md: 14px;
+    --desktop-pad: clamp(18px, 2vw, 30px);
+    --shadow: 0 18px 46px rgba(8, 38, 75, 0.08);
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 8% 0%, rgba(185, 133, 58, 0.11), transparent 28rem),
+      radial-gradient(circle at 100% 20%, rgba(8, 38, 75, 0.07), transparent 34rem),
+      var(--cream);
+  }
+
+  .crm-shell,
+  .workspace-shell {
+    background: transparent;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 20px 9px;
+    border-right: 1px solid rgba(255, 250, 241, 0.08);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.055), transparent 34%),
+      rgba(7, 29, 58, .99);
+    box-shadow: 14px 0 40px rgba(7, 29, 58, .11);
+  }
+
+  .brand-mark.logo-mark {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: rgba(255, 250, 241, .97);
+    box-shadow: 0 10px 26px rgba(0,0,0,.18);
+  }
+
+  .logo-mark img {
+    width: 92%;
+    height: 92%;
+  }
+
+  .quick-add {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .nav-list { gap: 7px; }
+
+  .nav-item {
+    min-height: 54px;
+    border-radius: 13px;
+    transition: transform .18s ease, background .18s ease, color .18s ease;
+  }
+
+  .nav-item:hover { transform: translateY(-1px); }
+
+  .nav-item.active {
+    color: #fffaf1;
+    background: linear-gradient(135deg, rgba(255,250,241,.17), rgba(255,250,241,.08));
+    box-shadow: inset 0 0 0 1px rgba(255,250,241,.08);
+  }
+
+  .workspace-page {
+    min-width: 0;
+    background:
+      linear-gradient(180deg, rgba(255,253,248,.90), rgba(244,239,229,.76));
+  }
+
+  .workspace-header,
+  .panel-header,
+  .stage-toolbar,
+  .info-header {
+    background: rgba(255, 253, 248, .88);
+    backdrop-filter: blur(18px);
+  }
+
+  .workspace-header {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    gap: 20px;
+    padding: 22px var(--desktop-pad);
+    border-bottom: 1px solid rgba(226, 216, 201, .74);
+    box-shadow: 0 12px 32px rgba(8, 38, 75, .055);
+  }
+
+  .workspace-header h1 {
+    font-size: clamp(32px, 3vw, 46px);
+    line-height: .98;
+  }
+
+  .workspace-header p {
+    max-width: 48rem;
+    font-size: 14px;
+  }
+
+  .workspace-actions button,
+  .workspace-card button,
+  .campaign-card button,
+  .subtle-button,
+  .button-link,
+  .service-actions button {
+    min-height: 42px;
+    border-radius: 11px;
+    transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+  }
+
+  .workspace-actions button:hover,
+  .workspace-card button:hover,
+  .campaign-card button:hover,
+  .subtle-button:hover,
+  .button-link:hover,
+  .service-actions button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 9px 22px rgba(8, 38, 75, .09);
+  }
+
+  .workspace-grid,
+  .home-view-switch,
+  .home-system-layout,
+  .search-page-card,
+  .market-board,
+  .pipeline-board {
+    padding-left: var(--desktop-pad);
+    padding-right: var(--desktop-pad);
+  }
+
+  .workspace-grid,
+  .home-system-layout,
+  .market-board,
+  .pipeline-board {
+    gap: 18px;
+  }
+
+  .workspace-card,
+  .campaign-card,
+  .service-card,
+  .pipeline-column,
+  .search-page-card {
+    border-radius: var(--desktop-radius-lg);
+    background: rgba(255, 253, 248, .92);
+    box-shadow: var(--shadow);
+  }
+
+  .relationship-system,
+  .world-map-panel {
+    border-radius: 22px;
+    box-shadow: 0 24px 64px rgba(8, 38, 75, .10);
+    overflow: hidden;
+  }
+
+  .search-box,
+  .metric-card,
+  .contact-row,
+  .contact-tabs button,
+  .market-filter button,
+  .template-dropzone,
+  input,
+  select,
+  textarea {
+    border-radius: var(--desktop-radius-md);
+  }
+
+  .contact-row {
+    margin: 3px 0;
+    transition: transform .16s ease, background .16s ease, box-shadow .16s ease;
+  }
+
+  .contact-row:hover,
+  .contact-row.selected {
+    transform: translateX(2px);
+    box-shadow: 0 8px 22px rgba(8, 38, 75, .06);
+  }
+
+  .people-panel,
+  .contact-stage,
+  .info-panel {
+    background: rgba(255, 253, 248, .91);
+  }
+
+  .modal-backdrop {
+    backdrop-filter: blur(12px);
+  }
+
+  .modal-card,
+  .modal {
+    border-radius: 22px;
+    box-shadow: 0 32px 90px rgba(7, 29, 58, .22);
+  }
+}

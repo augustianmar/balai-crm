@@ -1,4 +1,13 @@
 const storageKey = "balai-crm-store-v4";
+const responsiveUpgradeBackupKey = "balai-crm-store-v4-before-desktop-outfit-v19";
+try {
+  const existingBalaiData = localStorage.getItem(storageKey);
+  if (existingBalaiData && !localStorage.getItem(responsiveUpgradeBackupKey)) {
+    localStorage.setItem(responsiveUpgradeBackupKey, existingBalaiData);
+  }
+} catch {
+  // Continue normally if browser storage is unavailable.
+}
 const app = document.querySelector("#app");
 
 const countries = ["Finland", "Sweden", "Norway", "Indonesia", "Malaysia", "Philippines", "Singapore", "Others"];
@@ -349,7 +358,7 @@ function renderSidebar() {
   return `
     <aside class="sidebar" aria-label="Main navigation">
       <button class="brand-mark logo-mark" type="button" data-action="nav" data-view="home" title="BALAI CRM">
-        <img src="./assets/balai-logo.png" alt="BALAI" />
+        <img src="./assets/balai-emblem-final.svg" alt="BALAI" />
       </button>
       <button class="quick-add" aria-label="Add contact" data-action="open-modal" data-modal="contact">+</button>
       <nav class="nav-list">
@@ -459,7 +468,7 @@ function renderOrbitMap() {
       <div class="orbit-ring orbit-medium"></div>
       <div class="orbit-ring orbit-low"></div>
       <div class="system-core">
-        <img src="./assets/balai-orbit-logo.png" alt="BALAI" />
+        <img src="./assets/balai-emblem-final.svg" alt="BALAI" />
       </div>
       ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
     </article>
@@ -1598,15 +1607,30 @@ function placeKey(value) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+function isMobileViewport() {
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches;
+}
+
+function mobileOrbitBaseRadius() {
+  if (typeof window === "undefined") return 150;
+  return Math.round(Math.max(112, Math.min(178, window.innerWidth * 0.36)));
+}
+
 function companyOrbitRadius(priority = "Medium") {
+  if (isMobileViewport()) {
+    const base = mobileOrbitBaseRadius();
+    return { High: Math.round(base * 0.48), Medium: Math.round(base * 0.74), Low: base }[priority] || Math.round(base * 0.74);
+  }
   return { High: 140, Medium: 215, Low: 280 }[priority] || 215;
 }
 
 function companyPlanetSize(priority = "Medium") {
+  if (isMobileViewport()) return { High: 34, Medium: 31, Low: 28 }[priority] || 31;
   return { High: 38, Medium: 34, Low: 30 }[priority] || 34;
 }
 
 function companyPlanetExpandedSize(priority = "Medium") {
+  if (isMobileViewport()) return { High: 66, Medium: 61, Low: 56 }[priority] || 61;
   return { High: 78, Medium: 72, Low: 66 }[priority] || 72;
 }
 
@@ -1683,6 +1707,20 @@ function actionIcon(action) {
     More: `<svg viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>`
   };
   return icons[action] || navIcon("plus");
+}
+
+let resizeRefreshTimer = null;
+if (typeof window !== "undefined") {
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeRefreshTimer);
+    resizeRefreshTimer = setTimeout(() => render(), 160);
+  });
+
+  if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
 }
 
 render();

@@ -10,6 +10,10 @@ Open `index.html` in a browser.
 
 To open it from a launcher page, open `open-crm.html` and click **Open CRM in new tab**.
 
+## Mobile
+
+The CRM now has a responsive mobile layout. On phones, the sidebar becomes a bottom navigation bar, pages stack into single-column cards, contacts and company profiles open as mobile-friendly sections, forms behave like bottom sheets, and the Orbit/World maps resize for touch use. The app also includes a web manifest and service worker file for install-to-home-screen style use when hosted on GitHub Pages or another HTTPS host.
+
 ## Data
 
 The CRM starts empty. Data is saved in browser local storage after edits. Use **Export** regularly to download a JSON backup and **Import** to restore it.
@@ -21,3 +25,8 @@ npm run check
 ```
 
 The app has no runtime dependencies. The check command only verifies the JavaScript syntax with Node.
+
+
+## Desktop outfit v19
+
+The refined mobile BALAI visual language is now carried into the desktop layout. The finalized BALAI vector emblem is used throughout the interface. Existing browser data is preserved because the app continues to use `balai-crm-store-v4`; a one-time local backup is also stored under `balai-crm-store-v4-before-desktop-outfit-v19`.
