@@ -1,27 +1,41 @@
-# BALAI Customer Relationship Management
+# BALAI Customer Relationship Management — Superior Final
 
-Clean-start BALAI CRM interface for companies, people contacts, company profiles, deals, follow-up tasks, services, import/export backups, and browser-saved data. The interface uses BALAI branding with a cream, navy, and gold visual style.
+A private, browser-based CRM for BALAI with a refined dark neo-soul and
+Japanese editorial interface.
 
-The home page can switch between a BALAI-centered orbit map and a poster-style global SVG world map without Antarctica. Each view includes a short explanation: the orbit map shows relationship priority around BALAI, and the world map shows company markers by saved city/country location. Company bubbles stay small by default, expand on hover, and can be manually dragged into place from the map options menu on either home view. The Contacts section can switch between people and company profiles, with both types editable. Company profiles support location, pictures, and priority.
+## What is included
 
-## Open
+- Companies and people contacts
+- Deals and follow-up tasks
+- Services and product templates
+- Orbit and world relationship maps
+- Import and export backups
+- Automatic local recovery snapshots
+- Undo after deleting contacts or companies
+- Responsive desktop and mobile layouts
+- Latest BALAI vector emblem
 
-Open `index.html` in a browser.
+## Data preservation
 
-To open it from a launcher page, open `open-crm.html` and click **Open CRM in new tab**.
+The application continues to use:
 
-## Mobile
+`balai-crm-store-v4`
 
-The CRM now has a responsive mobile layout. On phones, the sidebar becomes a bottom navigation bar, pages stack into single-column cards, contacts and company profiles open as mobile-friendly sections, forms behave like bottom sheets, and the Orbit/World maps resize for touch use. The app also includes a web manifest and service worker file for install-to-home-screen style use when hosted on GitHub Pages or another HTTPS host.
+Replacing the application files on the same domain and path does not erase
+existing browser-saved contacts. Export a JSON backup before deployment as
+normal good practice.
 
-## Data
+## Launch
 
-The CRM starts empty. Data is saved in browser local storage after edits. Use **Export** regularly to download a JSON backup and **Import** to restore it.
+Open `index.html` through your web host. `balai-crm-standalone.html` is also
+included for a single-file deployment.
 
-## Check
+## Quality checks
 
-```sh
-npm run check
-```
-
-The app has no runtime dependencies. The check command only verifies the JavaScript syntax with Node.
+- JavaScript syntax check passed
+- Desktop home, world map and contacts rendered without runtime errors
+- Mobile home, world map and contacts rendered without runtime errors
+- Add-contact workflow tested
+- Modal Escape behaviour tested
+- Delete and Undo workflow tested
+- Search keyboard shortcut tested

@@ -1,10 +1,12 @@
-const CACHE_NAME = "balai-crm-v18";
+const CACHE_NAME = "balai-crm-v21-superior";
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./src/app.js",
   "./src/styles.css",
+  "./src/japanese-theme.css",
   "./assets/balai-logo.png",
+  "./assets/balai-final-emblem.svg",
   "./assets/balai-orbit-logo.png",
   "./manifest.webmanifest"
 ];
