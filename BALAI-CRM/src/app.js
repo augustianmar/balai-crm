@@ -3,6 +3,8 @@ const safetyBackupKey = "balai-crm-store-v4-pre-superior-v21";
 const recoveryDatabaseName = "balai-crm-recovery-v1";
 const recoveryStoreName = "snapshots";
 const app = document.querySelector("#app");
+let startupRecoveryNotice = "";
+let indexedRecoveryAttempted = false;
 
 const countries = ["Finland", "Sweden", "Norway", "Indonesia", "Malaysia", "Philippines", "Singapore", "Others"];
 const serviceTypes = ["Service", "Product"];
@@ -126,7 +128,7 @@ const state = {
   moreOpen: false,
   mapMenuOpen: false,
   mapEditMode: false,
-  notice: "",
+  notice: startupRecoveryNotice,
   undo: null,
   lastSavedAt: store.settings?.updatedAt || ""
 };
@@ -147,16 +149,78 @@ function emptyStore() {
   };
 }
 
-function loadStore() {
+function storeRecordCount(candidate) {
+  if (!candidate || typeof candidate !== "object") return 0;
+  return [
+    candidate.contacts,
+    candidate.companies,
+    candidate.deals,
+    candidate.tasks,
+    candidate.services
+  ].reduce((total, list) => total + (Array.isArray(list) ? list.length : 0), 0);
+}
+
+function parseStoredStore(raw) {
+  if (!raw) return null;
   try {
-    const raw = localStorage.getItem(storageKey);
-    if (raw && !localStorage.getItem(safetyBackupKey)) {
-      localStorage.setItem(safetyBackupKey, raw);
-    }
     const parsed = JSON.parse(raw);
     if (parsed && Array.isArray(parsed.contacts) && Array.isArray(parsed.companies)) {
-      return normalizeStore(parsed);
+      return parsed;
     }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function localRecoveryCandidates() {
+  const candidates = [];
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key || !key.startsWith("balai-crm-store")) continue;
+      const raw = localStorage.getItem(key);
+      const parsed = parseStoredStore(raw);
+      if (!parsed) continue;
+      candidates.push({
+        key,
+        raw,
+        parsed,
+        records: storeRecordCount(parsed),
+        updatedAt: Date.parse(parsed.settings?.updatedAt || parsed.settings?.createdAt || 0) || 0
+      });
+    }
+  } catch {
+    return [];
+  }
+  return candidates.sort((a, b) => b.records - a.records || b.updatedAt - a.updatedAt);
+}
+
+function loadStore() {
+  try {
+    const currentRaw = localStorage.getItem(storageKey);
+    const current = parseStoredStore(currentRaw);
+
+    if (current && storeRecordCount(current) > 0) {
+      if (!localStorage.getItem(safetyBackupKey)) {
+        localStorage.setItem(safetyBackupKey, currentRaw);
+      }
+      return normalizeStore(current);
+    }
+
+    const bestCandidate = localRecoveryCandidates()
+      .find((candidate) => candidate.key !== storageKey && candidate.records > 0);
+
+    if (bestCandidate) {
+      localStorage.setItem(storageKey, bestCandidate.raw);
+      if (!localStorage.getItem(safetyBackupKey)) {
+        localStorage.setItem(safetyBackupKey, bestCandidate.raw);
+      }
+      startupRecoveryNotice = `Recovered ${bestCandidate.records} saved CRM records`;
+      return normalizeStore(bestCandidate.parsed);
+    }
+
+    if (current) return normalizeStore(current);
   } catch {
     return emptyStore();
   }
@@ -291,6 +355,49 @@ async function saveRecoverySnapshot(data) {
   } catch {
     // Recovery snapshots are a silent safety layer; the CRM remains usable without them.
   }
+}
+
+async function readRecoverySnapshots() {
+  try {
+    const database = await openRecoveryDatabase();
+    const snapshots = await new Promise((resolve, reject) => {
+      const transaction = database.transaction(recoveryStoreName, "readonly");
+      const request = transaction.objectStore(recoveryStoreName).getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+      transaction.oncomplete = () => database.close();
+    });
+    return snapshots;
+  } catch {
+    return [];
+  }
+}
+
+async function attemptIndexedRecovery() {
+  if (indexedRecoveryAttempted || storeRecordCount(store) > 0) return;
+  indexedRecoveryAttempted = true;
+
+  const snapshots = await readRecoverySnapshots();
+  const candidates = snapshots
+    .map((snapshot) => {
+      const parsed = parseStoredStore(snapshot?.data);
+      return {
+        parsed,
+        savedAt: Date.parse(snapshot?.savedAt || 0) || 0,
+        records: storeRecordCount(parsed)
+      };
+    })
+    .filter((candidate) => candidate.parsed && candidate.records > 0)
+    .sort((a, b) => b.records - a.records || b.savedAt - a.savedAt);
+
+  const best = candidates[0];
+  if (!best || storeRecordCount(store) > 0) return;
+
+  store = normalizeStore(best.parsed);
+  localStorage.setItem(storageKey, JSON.stringify(store));
+  state.lastSavedAt = store.settings?.updatedAt || new Date().toISOString();
+  state.notice = `Recovered ${best.records} records from a safety snapshot`;
+  render();
 }
 
 function cloneStore() {
@@ -1851,3 +1958,4 @@ if (typeof window !== "undefined") {
 }
 
 render();
+setTimeout(() => { void attemptIndexedRecovery(); }, 80);
