@@ -1,13 +1,4 @@
 const storageKey = "balai-crm-store-v4";
-const japaneseSkinBackupKey = "balai-crm-store-v4-before-japanese-skin-v20";
-try {
-  const savedBalaiStore = localStorage.getItem(storageKey);
-  if (savedBalaiStore && !localStorage.getItem(japaneseSkinBackupKey)) {
-    localStorage.setItem(japaneseSkinBackupKey, savedBalaiStore);
-  }
-} catch {
-  // The CRM continues normally if browser storage is unavailable.
-}
 const app = document.querySelector("#app");
 
 const countries = ["Finland", "Sweden", "Norway", "Indonesia", "Malaysia", "Philippines", "Singapore", "Others"];
@@ -358,7 +349,7 @@ function renderSidebar() {
   return `
     <aside class="sidebar" aria-label="Main navigation">
       <button class="brand-mark logo-mark" type="button" data-action="nav" data-view="home" title="BALAI CRM">
-        <img src="./assets/balai-final-emblem.svg" alt="BALAI" />
+        <img src="./assets/balai-logo.png" alt="BALAI" />
       </button>
       <button class="quick-add" aria-label="Add contact" data-action="open-modal" data-modal="contact">+</button>
       <nav class="nav-list">
@@ -468,7 +459,7 @@ function renderOrbitMap() {
       <div class="orbit-ring orbit-medium"></div>
       <div class="orbit-ring orbit-low"></div>
       <div class="system-core">
-        <img src="./assets/balai-final-logo.svg" alt="BALAI" />
+        <img src="./assets/balai-orbit-emblem.svg" alt="BALAI" />
       </div>
       ${store.companies.length ? companyPlanets() : `<div class="empty-orbit">${emptyHint("Add companies to build your relationship system.")}<button type="button" data-action="open-modal" data-modal="company">Add company</button></div>`}
     </article>
@@ -505,18 +496,17 @@ function worldMapSvg() {
   return `
     <svg class="world-map-art" viewBox="0 0 1000 500" aria-hidden="true" focusable="false">
       <defs>
-        <linearGradient id="balai-land-gradient" x1="5%" y1="0%" x2="95%" y2="100%">
-          <stop offset="0%" stop-color="#efe8dc" />
-          <stop offset="47%" stop-color="#f8f5ef" />
-          <stop offset="100%" stop-color="#d1a46c" />
+        <linearGradient id="balai-land-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#252525" />
+          <stop offset="55%" stop-color="#1d1d1d" />
+          <stop offset="100%" stop-color="#29231f" />
         </linearGradient>
-        <filter id="balai-paper-lift" x="-4%" y="-4%" width="108%" height="112%">
-          <feDropShadow dx="-3" dy="-3" stdDeviation="2.2" flood-color="#ffffff" flood-opacity="0.72" />
-          <feDropShadow dx="0" dy="9" stdDeviation="4.8" flood-color="#6e5234" flood-opacity="0.22" />
-        </filter>
       </defs>
-      <path class="land land-shadow" d="${worldMapPath}" />
-      <path class="land main-land" fill="url(#balai-land-gradient)" filter="url(#balai-paper-lift)" d="${worldMapPath}" />
+      <g class="map-graticule">
+        <path d="M0 125H1000M0 250H1000M0 375H1000" />
+        <path d="M166 0V500M333 0V500M500 0V500M667 0V500M834 0V500" />
+      </g>
+      <path class="land main-land" fill="url(#balai-land-gradient)" d="${worldMapPath}" />
     </svg>
   `;
 }
@@ -1621,17 +1611,17 @@ function companyOrbitRadius(priority = "Medium") {
     const base = mobileOrbitBaseRadius();
     return { High: Math.round(base * 0.48), Medium: Math.round(base * 0.74), Low: base }[priority] || Math.round(base * 0.74);
   }
-  return { High: 140, Medium: 215, Low: 280 }[priority] || 215;
+  return { High: 132, Medium: 210, Low: 278 }[priority] || 210;
 }
 
 function companyPlanetSize(priority = "Medium") {
   if (isMobileViewport()) return { High: 34, Medium: 31, Low: 28 }[priority] || 31;
-  return { High: 38, Medium: 34, Low: 30 }[priority] || 34;
+  return { High: 54, Medium: 47, Low: 41 }[priority] || 47;
 }
 
 function companyPlanetExpandedSize(priority = "Medium") {
   if (isMobileViewport()) return { High: 66, Medium: 61, Low: 56 }[priority] || 61;
-  return { High: 78, Medium: 72, Low: 66 }[priority] || 72;
+  return { High: 82, Medium: 76, Low: 70 }[priority] || 76;
 }
 
 function sumDeals(stage) {
