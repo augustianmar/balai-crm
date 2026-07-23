@@ -1,0 +1,9 @@
+{
+  "name": "balai-crm",
+  "version": "1.0.0",
+  "description": "BALAI Customer Relationship Management prototype",
+  "private": true,
+  "scripts": {
+    "check": "node --check src/app.js"
+  }
+}
