@@ -1,4 +1,4 @@
-const CACHE_NAME = "balai-crm-v25-clean-map";
+const CACHE_NAME = "balai-crm-v26-world-map";
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const CORE_ASSETS = [
   "./src/styles.css",
   "./src/luxury-v24.css",
   "./src/v25-clean-map.css",
+  "./src/v26-world-map.css",
   "./assets/balai-final-emblem.svg",
   "./manifest.webmanifest"
 ];

@@ -128,6 +128,7 @@ const state = {
   moreOpen: false,
   mapMenuOpen: false,
   mapEditMode: false,
+  expandedMapCluster: "",
   notice: startupRecoveryNotice,
   undo: null,
   lastSavedAt: store.settings?.updatedAt || ""
@@ -698,10 +699,6 @@ function worldMapSvg() {
         <path class="continent continent-asia" fill="url(#map-land-east)" d="${editorialWorldMap.asia}" />
         <path class="continent continent-oceania" fill="url(#map-land-east)" d="${editorialWorldMap.oceania}" />
       </g>
-      <g class="bridge-routes">
-        <path d="M570 71 Q680 105 795 267" />
-        <path d="M570 71 Q705 120 788 246" />
-      </g>
     </svg>
   `;
 }
@@ -739,22 +736,133 @@ function companyPlanet(company, index, total) {
 }
 
 function companyMapMarkers() {
-  const points = store.companies.map((company) => ({ company, point: companyCoordinates(company) }));
-  const buckets = new Map();
-  points.forEach((item) => {
-    const key = item.company.mapPosition ? `manual-${item.company.id}` : `${Math.round(item.point.x / 2)}-${Math.round(item.point.y / 2)}`;
-    if (!buckets.has(key)) buckets.set(key, []);
-    buckets.get(key).push(item);
+  const items = store.companies.map((company) => ({
+    company,
+    point: companyCoordinates(company)
+  }));
+
+  const manualItems = items.filter((item) => item.company.mapPosition);
+  const automaticItems = items.filter((item) => !item.company.mapPosition);
+  const clusters = clusterMapItems(automaticItems);
+
+  const renderedAutomatic = clusters.map((cluster) => {
+    if (cluster.items.length === 1) {
+      const item = cluster.items[0];
+      return companyMapMarker(item.company, item.point);
+    }
+
+    if (state.mapEditMode) {
+      return spreadClusterItems(cluster.items, cluster.point)
+        .map((item) => companyMapMarker(item.company, item.point))
+        .join("");
+    }
+
+    return companyMapCluster(cluster);
+  }).join("");
+
+  return `${renderedAutomatic}${manualItems.map((item) => companyMapMarker(item.company, item.point)).join("")}`;
+}
+
+function clusterMapItems(items) {
+  const clusters = [];
+  const sorted = [...items].sort((a, b) => {
+    const priorityScore = { High: 0, Medium: 1, Low: 2 };
+    return (priorityScore[a.company.priority] ?? 1) - (priorityScore[b.company.priority] ?? 1)
+      || a.company.name.localeCompare(b.company.name);
   });
-  buckets.forEach((items) => {
-    if (items.length < 2 || items[0].company.mapPosition) return;
-    items.forEach((item, index) => {
-      const angle = (-90 + (index * 360) / items.length) * Math.PI / 180;
-      const radius = Math.min(4.6, 2.0 + items.length * 0.55);
-      item.point = cleanMapPoint(item.point.x + Math.cos(angle) * radius, item.point.y + Math.sin(angle) * radius);
+
+  sorted.forEach((item) => {
+    const existing = clusters.find((cluster) => {
+      const dx = Math.abs(cluster.point.x - item.point.x);
+      const dy = Math.abs(cluster.point.y - item.point.y);
+      return dx <= 5.5 && dy <= 8.5;
     });
+
+    if (!existing) {
+      clusters.push({
+        key: `cluster-${Math.round(item.point.x * 10)}-${Math.round(item.point.y * 10)}`,
+        point: { ...item.point },
+        items: [item]
+      });
+      return;
+    }
+
+    existing.items.push(item);
+    existing.point = {
+      x: existing.items.reduce((sum, entry) => sum + entry.point.x, 0) / existing.items.length,
+      y: existing.items.reduce((sum, entry) => sum + entry.point.y, 0) / existing.items.length
+    };
   });
-  return points.map(({ company, point }) => companyMapMarker(company, point)).join("");
+
+  return clusters;
+}
+
+function spreadClusterItems(items, center) {
+  const layouts = {
+    2: [[-3.3, 0], [3.3, 0]],
+    3: [[0, -5.7], [-4.3, 3.7], [4.3, 3.7]],
+    4: [[-3.8, -4.8], [3.8, -4.8], [-3.8, 4.8], [3.8, 4.8]],
+    5: [[0, 0], [0, -7.4], [5.4, 0], [0, 7.4], [-5.4, 0]],
+    6: [[-5.1, -5.1], [0, -5.1], [5.1, -5.1], [-5.1, 5.1], [0, 5.1], [5.1, 5.1]]
+  };
+  const offsets = layouts[items.length] || items.map((_, index) => {
+    if (index === 0) return [0, 0];
+    const angle = (index * 137.508 - 90) * Math.PI / 180;
+    const radius = 5.2 + Math.floor((index - 1) / 6) * 4.8;
+    return [Math.cos(angle) * radius, Math.sin(angle) * radius * 1.35];
+  });
+
+  return items.map((item, index) => ({
+    ...item,
+    point: cleanMapPoint(center.x + offsets[index][0], center.y + offsets[index][1])
+  }));
+}
+
+function companyMapCluster(cluster) {
+  const highestPriority = cluster.items.some((item) => item.company.priority === "High")
+    ? "High"
+    : cluster.items.some((item) => item.company.priority === "Medium") ? "Medium" : "Low";
+  const expanded = state.expandedMapCluster === cluster.key;
+  const label = cluster.items.length === 1 ? "1 company" : `${cluster.items.length} companies`;
+  const placement = clusterPopoverPlacement(cluster.point);
+  const names = cluster.items.map((item) => item.company.name).filter(Boolean).join(", ");
+
+  return `
+    <button
+      class="map-cluster ${priorityClass(highestPriority)} ${expanded ? "is-expanded" : ""}"
+      type="button"
+      data-action="toggle-map-cluster"
+      data-cluster="${escapeHtml(cluster.key)}"
+      style="--map-x:${cluster.point.x}%; --map-y:${cluster.point.y}%;"
+      title="${escapeHtml(`${label}: ${names}`)}"
+      aria-expanded="${expanded}"
+    >
+      <span>${cluster.items.length}</span>
+      <small>${label}</small>
+    </button>
+    ${expanded ? `
+      <aside class="map-cluster-popover ${placement}" style="--map-x:${cluster.point.x}%; --map-y:${cluster.point.y}%;">
+        <header><span>LOCATION GROUP</span><strong>${label}</strong></header>
+        <div class="map-cluster-list">
+          ${cluster.items.map(({ company }) => `
+            <button type="button" data-action="open-company" data-id="${company.id}">
+              ${companyMapVisual(company)}
+              <span><strong>${escapeHtml(company.name || "Unnamed company")}</strong><small>${escapeHtml([company.location, company.country].filter(Boolean).join(", ") || "Location not set")}</small></span>
+              <b class="${priorityClass(company.priority)}">${escapeHtml(company.priority || "Medium")}</b>
+            </button>
+          `).join("")}
+        </div>
+      </aside>
+    ` : ""}
+  `;
+}
+
+function clusterPopoverPlacement(point) {
+  if (point.y < 28) return "below";
+  if (point.y > 72) return "above";
+  if (point.x > 76) return "left";
+  if (point.x < 24) return "right";
+  return "below";
 }
 
 function companyMapMarker(company, point = companyCoordinates(company)) {
@@ -1293,6 +1401,7 @@ function handleAction(event) {
     state.moreOpen = false;
     state.mapMenuOpen = false;
     state.mapEditMode = false;
+    state.expandedMapCluster = "";
     render();
   } else if (action === "open-modal") {
     state.modal = el.dataset.modal;
@@ -1323,6 +1432,11 @@ function handleAction(event) {
     state.moreOpen = false;
     state.mapMenuOpen = false;
     state.mapEditMode = false;
+    state.expandedMapCluster = "";
+    render();
+  } else if (action === "toggle-map-cluster") {
+    const key = el.dataset.cluster || "";
+    state.expandedMapCluster = state.expandedMapCluster === key ? "" : key;
     render();
   } else if (action === "toggle-map-menu") {
     state.mapMenuOpen = !state.mapMenuOpen;
@@ -1330,6 +1444,7 @@ function handleAction(event) {
   } else if (action === "toggle-map-edit") {
     state.mapEditMode = !state.mapEditMode;
     state.mapMenuOpen = false;
+    state.expandedMapCluster = "";
     render();
   } else if (action === "reset-map-positions") {
     const positionKey = state.homeMode === "orbit" ? "orbitPosition" : "mapPosition";
@@ -1351,6 +1466,7 @@ function handleAction(event) {
     state.view = "contacts";
     state.moreOpen = false;
     state.mapMenuOpen = false;
+    state.expandedMapCluster = "";
     render();
   } else if (action === "toggle-more") {
     state.moreOpen = !state.moreOpen;

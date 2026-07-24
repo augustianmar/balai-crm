@@ -1,0 +1,250 @@
+/* BALAI CRM V26 — World map clarity and intelligent clustering */
+
+.bridge-routes { display: none !important; }
+
+.world-map {
+  background:
+    radial-gradient(circle at 62% 28%, rgba(231, 101, 18, 0.024), transparent 18rem),
+    #0a0a0a !important;
+}
+
+.map-graticule { opacity: 0.55 !important; }
+.map-graticule path { stroke: rgba(243, 238, 231, 0.018) !important; }
+.editorial-land .continent {
+  fill: #211f1d !important;
+  stroke: #49443f !important;
+  stroke-width: 0.62 !important;
+}
+
+/* Individual markers: no square tile around a circular logo. */
+.map-marker {
+  width: 38px !important;
+  min-width: 38px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.map-marker i {
+  width: 30px !important;
+  height: 30px !important;
+  border: 2px solid #090909 !important;
+  box-shadow:
+    0 0 0 1px rgba(184, 154, 97, 0.45),
+    0 10px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+.map-marker.high i {
+  width: 34px !important;
+  height: 34px !important;
+  box-shadow:
+    0 0 0 1px rgba(231, 101, 18, 0.88),
+    0 12px 28px rgba(0, 0, 0, 0.54) !important;
+}
+
+.map-marker.medium i { box-shadow: 0 0 0 1px rgba(114, 52, 71, 0.82), 0 10px 24px rgba(0,0,0,.48) !important; }
+.map-marker.low i { opacity: 0.78; }
+
+.map-marker:hover i,
+.map-marker:focus-visible i,
+.map-marker.is-dragging i {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.map-marker:focus-visible {
+  outline: 0 !important;
+}
+
+/* Intelligent location cluster. */
+.map-cluster {
+  position: absolute;
+  top: var(--map-y);
+  left: var(--map-x);
+  z-index: 24;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  min-height: 46px;
+  padding: 0;
+  border: 1px solid rgba(184, 154, 97, 0.48);
+  border-radius: 50%;
+  color: var(--ivory);
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,.08), transparent 30%),
+    #171717;
+  box-shadow:
+    0 0 0 5px rgba(10, 10, 10, 0.72),
+    0 16px 36px rgba(0, 0, 0, 0.56);
+  transform: translate(-50%, -50%);
+  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.map-cluster::after {
+  position: absolute;
+  inset: -9px;
+  border: 1px solid rgba(184, 154, 97, 0.10);
+  border-radius: 50%;
+  content: "";
+}
+
+.map-cluster.high { border-color: rgba(231, 101, 18, 0.86); }
+.map-cluster.medium { border-color: rgba(114, 52, 71, 0.84); }
+.map-cluster.low { border-color: rgba(112, 107, 101, 0.60); }
+
+.map-cluster:hover,
+.map-cluster:focus-visible,
+.map-cluster.is-expanded {
+  z-index: 42;
+  border-color: var(--orange-bright);
+  background: #20150f;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.map-cluster:focus-visible { outline: 2px solid var(--orange-bright); outline-offset: 4px; }
+
+.map-cluster > span {
+  color: #fff7ee;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.map-cluster > small {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  color: #77716b;
+  font-size: 8px;
+  font-weight: 650;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.map-cluster-popover {
+  position: absolute;
+  z-index: 60;
+  width: 270px;
+  overflow: hidden;
+  border: 1px solid rgba(242, 236, 227, 0.12);
+  border-radius: 14px;
+  background: rgba(18, 18, 18, 0.97);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(18px) saturate(1.1);
+}
+
+.map-cluster-popover.below {
+  top: calc(var(--map-y) + 38px);
+  left: var(--map-x);
+  transform: translateX(-50%);
+}
+.map-cluster-popover.above {
+  bottom: calc(100% - var(--map-y) + 38px);
+  left: var(--map-x);
+  transform: translateX(-50%);
+}
+.map-cluster-popover.left {
+  top: var(--map-y);
+  right: calc(100% - var(--map-x) + 38px);
+  transform: translateY(-50%);
+}
+.map-cluster-popover.right {
+  top: var(--map-y);
+  left: calc(var(--map-x) + 38px);
+  transform: translateY(-50%);
+}
+
+.map-cluster-popover > header {
+  display: grid;
+  gap: 3px;
+  padding: 13px 14px 11px;
+  border-bottom: 1px solid var(--line);
+  background: #101010;
+}
+.map-cluster-popover > header span {
+  color: var(--orange-bright);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+.map-cluster-popover > header strong {
+  color: var(--ivory);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.map-cluster-list {
+  display: grid;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.map-cluster-list > button {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  border: 0;
+  border-radius: 9px;
+  padding: 6px 8px;
+  color: var(--ivory);
+  background: transparent;
+  text-align: left;
+}
+.map-cluster-list > button:hover { background: #201711; }
+.map-cluster-list > button > i {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  border: 1px solid rgba(184,154,97,.42);
+  border-radius: 50%;
+  color: #fff;
+  background: var(--burgundy);
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 700;
+}
+.map-cluster-list > button > i img { width:100%; height:100%; object-fit:cover; }
+.map-cluster-list > button > span { min-width: 0; }
+.map-cluster-list > button > span strong,
+.map-cluster-list > button > span small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.map-cluster-list > button > span strong { color:var(--ivory-soft); font-size:10px; }
+.map-cluster-list > button > span small { margin-top:2px; color:#706a64; font-size:8px; }
+.map-cluster-list > button > b {
+  border-radius:999px;
+  padding:4px 6px;
+  color:#aaa39b;
+  background:#242220;
+  font-size:7px;
+  font-weight:700;
+}
+.map-cluster-list > button > b.high { color:#fff3e9; background:var(--orange); }
+.map-cluster-list > button > b.medium { color:#fff0ea; background:var(--burgundy); }
+
+/* Remove any inherited square focus/border treatment from map buttons. */
+.world-map .map-marker,
+.world-map .map-cluster {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+@media (max-width: 720px) {
+  .map-cluster-popover {
+    right: 12px !important;
+    bottom: 56px !important;
+    left: 12px !important;
+    top: auto !important;
+    width: auto;
+    transform: none !important;
+  }
+}
