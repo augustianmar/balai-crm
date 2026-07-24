@@ -1,0 +1,542 @@
+/*
+  BALAI CRM — Pixel Perfect Production Corrections
+  Loaded after every other stylesheet.
+  Establishes strict dimensions, spacing, contrast and alignment.
+*/
+
+:root {
+  --u1: 4px;
+  --u2: 8px;
+  --u3: 12px;
+  --u4: 16px;
+  --u5: 20px;
+  --u6: 24px;
+  --u8: 32px;
+  --control-h: 44px;
+  --field-h: 52px;
+  --sidebar-w: 80px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Exact desktop shell and navigation geometry */
+.workspace-shell {
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr) !important;
+}
+
+.sidebar {
+  width: var(--sidebar-w) !important;
+  min-width: var(--sidebar-w) !important;
+  height: 100dvh !important;
+  padding: 16px 12px 14px !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+.brand-mark.logo-mark {
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 52px !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  max-height: 52px !important;
+  margin: 0 !important;
+  padding: 5px !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+}
+
+.logo-mark img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Mathematically centred circle and plus. */
+.quick-add {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 40px !important;
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  margin: 0 0 2px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1 !important;
+  overflow: hidden !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  letter-spacing: 0 !important;
+  text-indent: 0 !important;
+}
+
+.quick-add::before {
+  display: block;
+  color: #fff8ef;
+  content: "+";
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 27px;
+  font-weight: 300;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.nav-list {
+  display: grid !important;
+  flex: 1 1 auto !important;
+  align-content: start !important;
+  gap: 4px !important;
+  width: 100% !important;
+  min-height: 0 !important;
+}
+
+.nav-item {
+  display: grid !important;
+  place-items: center !important;
+  align-content: center !important;
+  gap: 4px !important;
+  width: 100% !important;
+  min-height: 54px !important;
+  padding: 6px 4px !important;
+  border-radius: 10px !important;
+}
+
+.nav-item svg {
+  display: block !important;
+  width: 19px !important;
+  height: 19px !important;
+}
+
+.nav-item span {
+  line-height: 1.1 !important;
+}
+
+.help-button,
+.user-avatar {
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 34px !important;
+  width: 34px !important;
+  min-width: 34px !important;
+  max-width: 34px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  max-height: 34px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Shared page gutters and vertical rhythm */
+.workspace-header {
+  min-height: 96px !important;
+  padding: 22px 32px !important;
+}
+
+.home-view-switch {
+  padding: 16px 32px 0 !important;
+}
+
+.home-system-layout {
+  gap: 16px !important;
+  padding: 16px 32px 32px !important;
+}
+
+.workspace-grid,
+.pipeline-board {
+  gap: 16px !important;
+  padding: 24px 32px 32px !important;
+}
+
+.search-page-card {
+  margin: 24px 32px 0 !important;
+}
+
+.workspace-card,
+.campaign-card,
+.service-card,
+.metric-panel {
+  padding: 20px !important;
+}
+
+.workspace-actions,
+.service-actions,
+.action-row,
+.filter-row {
+  align-items: center !important;
+}
+
+.workspace-actions button,
+.service-actions button,
+.primary-button,
+.secondary-button,
+.subtle-button,
+.button-link,
+.mini-button {
+  min-height: var(--control-h) !important;
+  padding: 0 16px !important;
+  line-height: 1 !important;
+}
+
+/* Contacts: exact columns and shared baselines */
+.contacts-layout {
+  grid-template-columns: 304px minmax(420px, 1fr) 304px !important;
+}
+
+.panel-header,
+.stage-toolbar,
+.info-header {
+  min-height: 80px !important;
+  padding: 16px 20px !important;
+}
+
+.contact-tabs {
+  gap: 8px !important;
+  padding: 12px 12px 0 !important;
+}
+
+.contact-tabs button {
+  min-height: 40px !important;
+}
+
+.contact-list {
+  padding: 8px 12px 24px !important;
+}
+
+.contact-row {
+  min-height: 64px !important;
+  padding: 10px 12px !important;
+}
+
+.hero-contact {
+  padding: 28px 24px 24px !important;
+}
+
+.activity {
+  padding: 24px 28px 36px !important;
+}
+
+.activity-card {
+  padding: 18px 20px !important;
+}
+
+/* Maps: same outer spacing and balanced inner title/tools */
+.relationship-system,
+.world-map-panel {
+  min-height: 620px !important;
+}
+
+.map-title {
+  top: 24px !important;
+  left: 24px !important;
+}
+
+.map-tools {
+  top: 20px !important;
+  right: 20px !important;
+}
+
+.system-summary {
+  gap: 12px !important;
+}
+
+/* Modal geometry: centered, compact, and always fully usable */
+.modal-backdrop {
+  align-items: center !important;
+  justify-items: center !important;
+  overflow: auto !important;
+  padding: 24px !important;
+}
+
+.edit-modal {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  width: min(900px, calc(100vw - 48px)) !important;
+  max-height: calc(100dvh - 48px) !important;
+  margin: auto !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+.edit-modal header {
+  min-height: 88px !important;
+  padding: 18px 24px !important;
+}
+
+.edit-modal header > div {
+  display: grid !important;
+  align-content: center !important;
+  gap: 5px !important;
+}
+
+.edit-modal header h2,
+.edit-modal header p {
+  margin: 0 !important;
+}
+
+.edit-modal .modal-close,
+.edit-modal header button[data-action="close-modal"] {
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 40px !important;
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid rgba(242, 236, 227, 0.14) !important;
+  border-radius: 11px !important;
+  color: #f2ece3 !important;
+  background: #171717 !important;
+  -webkit-text-fill-color: #f2ece3 !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 25px !important;
+  font-weight: 300 !important;
+  line-height: 1 !important;
+}
+
+.edit-modal .modal-close:hover,
+.edit-modal header button[data-action="close-modal"]:hover {
+  color: #ffffff !important;
+  border-color: #df640f !important;
+  background: #df640f !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-content: start !important;
+  gap: 18px 16px !important;
+  padding: 24px !important;
+  overflow-y: auto !important;
+}
+
+.form-grid label {
+  display: grid !important;
+  align-content: start !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+.form-grid label span {
+  min-height: 16px !important;
+  color: #aaa198 !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  line-height: 16px !important;
+}
+
+/* Strong specificity fixes the invisible typed text shown in the screenshot. */
+.edit-modal .form-grid input,
+.edit-modal .form-grid select,
+.edit-modal .form-grid textarea,
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: var(--field-h) !important;
+  margin: 0 !important;
+  border: 1px solid rgba(242, 236, 227, 0.13) !important;
+  border-radius: 10px !important;
+  color: #f5eee5 !important;
+  caret-color: #f0711c !important;
+  background: #181818 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025) !important;
+  -webkit-text-fill-color: #f5eee5 !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  opacity: 1 !important;
+}
+
+.edit-modal .form-grid input,
+.edit-modal .form-grid select,
+.form-grid input,
+.form-grid select {
+  height: var(--field-h) !important;
+  padding: 0 14px !important;
+}
+
+.edit-modal .form-grid textarea,
+.form-grid textarea {
+  min-height: 112px !important;
+  padding: 14px !important;
+  resize: vertical !important;
+}
+
+.edit-modal .form-grid input::placeholder,
+.edit-modal .form-grid textarea::placeholder,
+.form-grid input::placeholder,
+.form-grid textarea::placeholder {
+  color: #77716b !important;
+  -webkit-text-fill-color: #77716b !important;
+  opacity: 1 !important;
+}
+
+.edit-modal .form-grid select option,
+.form-grid select option {
+  color: #f5eee5 !important;
+  background: #181818 !important;
+}
+
+.edit-modal .form-grid input:focus,
+.edit-modal .form-grid select:focus,
+.edit-modal .form-grid textarea:focus,
+.form-grid input:focus,
+.form-grid select:focus,
+.form-grid textarea:focus {
+  border-color: #f0711c !important;
+  outline: 0 !important;
+  color: #ffffff !important;
+  background: #1c1a19 !important;
+  box-shadow: 0 0 0 3px rgba(240, 113, 28, 0.14) !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.edit-modal .form-grid input:-webkit-autofill,
+.edit-modal .form-grid input:-webkit-autofill:hover,
+.edit-modal .form-grid input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f5eee5 !important;
+  box-shadow: 0 0 0 1000px #181818 inset !important;
+  caret-color: #f0711c !important;
+}
+
+.edit-modal footer {
+  min-height: 72px !important;
+  padding: 14px 24px !important;
+}
+
+.edit-modal footer button {
+  min-width: 96px !important;
+  min-height: 42px !important;
+  margin: 0 !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  line-height: 1 !important;
+}
+
+/* Tablet */
+@media (max-width: 1080px) and (min-width: 721px) {
+  :root {
+    --sidebar-w: 72px;
+  }
+
+  .sidebar {
+    padding-inline: 9px !important;
+  }
+
+  .contacts-layout {
+    grid-template-columns: 280px minmax(380px, 1fr) !important;
+  }
+}
+
+/* Mobile keeps the established bottom navigation, but fixes control geometry. */
+@media (max-width: 720px) {
+  .workspace-shell {
+    display: block !important;
+  }
+
+  .sidebar {
+    width: auto !important;
+    min-width: 0 !important;
+    height: 64px !important;
+    padding: 7px !important;
+    gap: 6px !important;
+  }
+
+  .nav-list {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    gap: 2px !important;
+  }
+
+  .nav-item {
+    min-height: 48px !important;
+    padding: 5px 4px !important;
+  }
+
+  .workspace-header {
+    min-height: auto !important;
+    padding: 18px 16px !important;
+  }
+
+  .home-view-switch {
+    padding: 12px 14px 0 !important;
+  }
+
+  .home-system-layout,
+  .workspace-grid,
+  .pipeline-board {
+    padding: 14px 14px 96px !important;
+  }
+
+  .search-page-card {
+    margin: 14px 14px 0 !important;
+  }
+
+  .contacts-layout {
+    display: block !important;
+  }
+
+  .panel-header,
+  .stage-toolbar,
+  .info-header {
+    min-height: 68px !important;
+    padding: 14px 16px !important;
+  }
+
+  .activity {
+    padding: 16px 14px 104px !important;
+  }
+
+  .modal-backdrop {
+    align-items: end !important;
+    padding: 10px !important;
+  }
+
+  .edit-modal {
+    width: 100% !important;
+    max-height: calc(100dvh - 20px) !important;
+    border-radius: 18px !important;
+  }
+
+  .edit-modal header {
+    min-height: 76px !important;
+    padding: 15px 16px !important;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    padding: 16px !important;
+  }
+
+  .edit-modal footer {
+    min-height: 68px !important;
+    padding: 12px 16px !important;
+  }
+}
