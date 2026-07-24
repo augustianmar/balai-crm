@@ -1,13 +1,11 @@
-const CACHE_NAME = "balai-crm-v21-superior";
+const CACHE_NAME = "balai-crm-v24-million-dollar";
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./src/app.js",
   "./src/styles.css",
-  "./src/japanese-theme.css",
-  "./assets/balai-logo.png",
+  "./src/luxury-v24.css",
   "./assets/balai-final-emblem.svg",
-  "./assets/balai-orbit-logo.png",
   "./manifest.webmanifest"
 ];
 
@@ -26,6 +24,12 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request).catch(() => caches.match("./index.html")))
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => undefined);
+        return response;
+      })
+      .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
   );
 });
