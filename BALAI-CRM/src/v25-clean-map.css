@@ -1,0 +1,234 @@
+
+/*
+  BALAI CRM V25 — Clean map composition + fixed navigation
+  Loaded last. Removes empty-state overlap and desktop rail drift.
+*/
+
+:root {
+  --balai-rail: 72px;
+}
+
+/* Keep the full navigation rail visible while the page scrolls. */
+@media (min-width: 721px) {
+  .workspace-shell {
+    display: block !important;
+    min-height: 100dvh !important;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    z-index: 100 !important;
+    width: var(--balai-rail) !important;
+    min-width: var(--balai-rail) !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  .workspace-page {
+    width: calc(100% - var(--balai-rail)) !important;
+    min-height: 100dvh !important;
+    margin-left: var(--balai-rail) !important;
+  }
+}
+
+/* Remove the legacy caption that collides with the priority key. */
+.relationship-system::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Make the map body a calm canvas. */
+.map-card-body {
+  isolation: isolate !important;
+}
+
+.orbit-canvas,
+.world-map {
+  overflow: hidden !important;
+}
+
+/* Empty states become compact control cards, never centre overlays. */
+.map-empty-state {
+  position: absolute !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: 24px !important;
+  left: 24px !important;
+  z-index: 30 !important;
+  display: grid !important;
+  justify-items: start !important;
+  gap: 8px !important;
+  width: min(300px, calc(100% - 48px)) !important;
+  padding: 16px !important;
+  border: 1px solid rgba(242, 236, 227, 0.10) !important;
+  border-radius: 14px !important;
+  color: var(--ivory) !important;
+  background: rgba(15, 15, 15, 0.92) !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.42) !important;
+  transform: none !important;
+  text-align: left !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+}
+
+.orbit-canvas .map-empty-state {
+  max-width: 292px !important;
+}
+
+.world-map .map-empty-state {
+  max-width: 306px !important;
+  background: rgba(13, 13, 13, 0.94) !important;
+}
+
+.map-empty-state .empty-state-mark {
+  display: grid !important;
+  place-items: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 2px !important;
+  border: 1px solid rgba(184, 154, 97, 0.28) !important;
+  border-radius: 50% !important;
+  color: var(--brass) !important;
+  background: #141414 !important;
+  font-size: 10px !important;
+}
+
+.map-empty-state strong {
+  max-width: 100% !important;
+  margin: 0 !important;
+  color: var(--ivory) !important;
+  font-family: var(--font-body) !important;
+  font-size: 18px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.2 !important;
+}
+
+.map-empty-state p {
+  max-width: 250px !important;
+  margin: 0 !important;
+  color: #817a73 !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+}
+
+.map-empty-state > div {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 4px !important;
+}
+
+.map-empty-state button {
+  min-height: 36px !important;
+  padding: 0 13px !important;
+  font-size: 10px !important;
+}
+
+/* The BALAI core remains visually unobstructed. */
+.system-core {
+  z-index: 12 !important;
+}
+
+.orbit-ring {
+  z-index: 2 !important;
+}
+
+/* Clean, readable keys instead of loose text collisions. */
+.orbit-key,
+.map-legend {
+  position: absolute !important;
+  right: 18px !important;
+  bottom: 18px !important;
+  left: auto !important;
+  z-index: 28 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 30px !important;
+  margin: 0 !important;
+  padding: 0 11px !important;
+  border: 1px solid rgba(242, 236, 227, 0.075) !important;
+  border-radius: 999px !important;
+  color: #77716b !important;
+  background: rgba(13, 13, 13, 0.88) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24) !important;
+  font-size: 8px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+.orbit-key span,
+.map-legend span {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  white-space: nowrap !important;
+}
+
+.orbit-key i,
+.map-legend i {
+  flex: 0 0 6px !important;
+  width: 6px !important;
+  height: 6px !important;
+}
+
+/* The map itself stays readable behind the control card. */
+.world-map-art {
+  inset: 28px 28px 50px !important;
+  width: calc(100% - 56px) !important;
+  height: calc(100% - 78px) !important;
+}
+
+.world-map .editorial-land {
+  opacity: 0.94 !important;
+}
+
+/* Avoid accidental interaction overlap at the lower corners. */
+.map-marker {
+  z-index: 15 !important;
+}
+
+.map-marker:hover,
+.map-marker:focus-visible,
+.map-marker.is-dragging {
+  z-index: 40 !important;
+}
+
+/* Small screens: stack the empty-state controls neatly. */
+@media (max-width: 720px) {
+  .workspace-page {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .map-empty-state {
+    right: 12px !important;
+    bottom: 14px !important;
+    left: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+    padding: 14px !important;
+  }
+
+  .map-empty-state > div {
+    width: 100% !important;
+  }
+
+  .map-empty-state button {
+    flex: 1 1 130px !important;
+  }
+
+  .orbit-key,
+  .map-legend {
+    right: 12px !important;
+    bottom: 12px !important;
+  }
+
+  .orbit-canvas:has(.map-empty-state) .orbit-key,
+  .world-map:has(.map-empty-state) .map-legend {
+    display: none !important;
+  }
+}
